@@ -1,0 +1,322 @@
+***Settings***
+Suite Setup
+Test Setup
+Test Teardown
+Suite Teardown
+
+Library  SeleniumLibrary  timeout=5  implicit_wait=0.5  run_on_failure=Capture Page Screenshot
+Library    XML
+
+*** Variables ***
+${BROWSER}       Chrome
+${LOGIN_URL}     https://proovikivi.ee/login
+${CREATE_ACCOUNT}  https://proovikivi.ee/create-account
+${PROJECTS_URL}  https://proovikivi.ee/projects
+${CREATE_PROJECT_URL}    https://proovikivi.ee/create-project
+${IMAGE_PATH}  C:/Kasutaja/Kaust/kaanepilt.jpg
+
+*** Test Cases ***
+Test Case 1: Konto loomine korrektsete andmetega
+    Open Browser    ${CREATE_ACCOUNT}    ${BROWSER}
+    Maximize Browser Window
+    Click Element    id=create-account-button
+    Wait Until Element Is Visible    id=registration-form
+    Input Text    id=full-name    John Doe
+    Input Text    id=email    johndoe@example.com
+    Select From List by Index    id=gender    1
+    Select From List by Index    id=day    1
+    Select From List by Index    id=month    1
+    Select From List by Index    id=year    1
+    Select From List by Index    id=user-type    1
+    Input Text    id=related-institutions-search    Institution
+    Click Element    xpath=//*[contains(text(),'Institution')]
+    Input Password    id=password    TestPassword123
+    Input Password    id=confirm-password    TestPassword123
+    Click Button    id=create-account-submit
+    Page Should Contain Element    xpath=//*[contains(text(),'Account created successfully')]
+    [Teardown]    Close Browser
+
+Test Case 2: Konto loomine, sisestades ebakorrektsed andmed
+    Open Browser    ${LOGIN_URL}    ${BROWSER}
+    Click Button    id=create-account-button
+    Input Text    id=full-name    Testkasutaja
+    Input Text    id=email    testkasutaja.com
+    Input Text    id=related-organizations-search    Asutuse nimi
+    Click Element    xpath=//*[@class='ant-select-item-option-content']
+    Input Text    id=password    TugevParool123
+    Input Text    id=confirm-password    TugevParool123
+    Click Button    id=create-account-submit-button
+    Wait Until Page Contains    Kõik kohustuslikud väljad ei ole korrektselt täidetud!
+    Close Browser
+
+
+Test Case 3: Sisselogimine korrektsete andmetega
+    Open Browser    ${LOGIN_URL}    ${BROWSER}
+    Maximize Browser Window
+    Input Text    id=email    validemail@example.com
+    Input Password    id=password    TestPassword123
+    Click Button    id=login-button
+    Close Browser
+
+Test Case 4: Sisselogimine ebakorrektsete andmetega
+    
+    # Epost mis ei ole eelenevalt registreeritud
+    Open Browser    ${LOGIN_URL}    ${BROWSER}
+    Maximize Browser Window
+    Input Text    id=email    invalid@Emailexample.com
+    Input Password    id=password    TestPassword123
+    Click Button    id=login-button
+    Wait Until Page Contains Element    xpath=//*[contains(text(),'Incorrect email or password')]
+    Close Browser
+
+    # Epost mis ei sisalda @
+    Input Text    id=email    invalidEmailxample.com
+    Input Password    id=password    TestPassword123
+    Click Button    id=login-button
+    Wait Until Page Contains Element    xpath=//*[contains(text(),'Incorrect email or password')]
+    Close Browser
+
+    # Katse ilma paroolita
+    Input Text    id=email    validemail@example.com
+    Click Button    id=login-button
+    Wait Until Page Contains Element    xpath=//*[contains(text(),'Incorrect email or password')]
+    Close Browser
+
+    # Katse ilma epostita
+    Input Password    id=password    TestPassword123
+    Click Button    id=login-button
+    Wait Until Page Contains Element    xpath=//*[contains(text(),'Incorrect email or password')]
+    Close Browser
+
+    # Vale parool / parool mis ei vasta emailile
+    Input Text    id=email    validemail@example.com
+    Input Password    id=password    invalidPassword123
+    Click Button    id=login-button
+    Wait Until Page Contains Element    xpath=//*[contains(text(),'Incorrect email or password')]
+    Close Browser
+
+Test Case 5: Sisse logitud vaade - Projektide otsimine ja sorteerimine
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    # Otsing asukoha järgi
+    Click Element    id=search-input
+    Input Text    id=search-input    Tallinn
+    Click Button    id=search-button
+    Close Browser
+
+    # Otsing märksõna järgi
+    Click Element    id=search-input
+    Input Text    id=search-input    robotframework
+    Click Button    id=search-button
+    Close Browser
+
+    # Sorteerimine populaarsuse järgi
+    Click Element    id=sort-select
+    Click Element    xpath=//*[@value='popularity']
+    Close Browser
+
+    # Sorteerimine uuemate järgi
+    Click Element    id=sort-select
+    Click Element    xpath=//*[@value='newest']
+    Close Browser
+
+    # Sorteerimine vanemate järgi
+    Click Element    id=sort-select
+    Click Element    xpath=//*[@value='oldest']
+    Close Browser
+
+    # Sorteerimine aktiivsete järgi
+    Click Element    id=sort-select
+    Click Element    xpath=//*[@value='active']
+    Close Browser
+
+    # Sorteerimine mitteaktiivsete järgi
+    Click Element    id=sort-select
+    Click Element    xpath=//*[@value='inactive']
+    Close Browser
+
+    # Vaade Minu projektidele
+    Click Button    id=my-projects-button
+    Close Browser
+
+    # Vaade Lemmikutele
+    Click Button    id=favorites-button
+    Close Browser
+
+    # Vaade Kõikidele projektidele
+    Click Button    id=all-projects-button
+    Close Browser
+
+Test Case 6: Sisse logitud vaade - Projekti loomine
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    # Vali väljad projekti loomiseks
+    Click Button    id=create-project-button
+    Wait Until Page Contains    Projekti loomine
+
+    # Täida kohustuslikud väljad
+    Input Text    id=title-input    Test projekt
+    Input Text    id=project-description    Projekti lühitutvustus
+    Select From List by Index    id=proovikivi-select    1
+    Click Element    id=supervisor-input
+    Input Text    id=supervisor-input    Juhendaja
+    Wait Until Page Contains    Juhendaja Nimi
+    Click Element    xpath=//*[contains(text(), 'Juhendaja Nimi')]
+    Click Button    id=next-button
+    Wait Until Page Contains    Nüüd saad hakkata projektile sisu looma
+
+    # Valikulised väljad
+    Click Button    id=add-cover-image
+    Choose File    id=file-input    ${IMAGE_PATH}
+    Click Button    id=open-button
+    Input Text    id=cover-description-input    Kaanepildi kirjeldus
+    Select From List by Index    id=location-select    1
+    Input Text    id=location-precision-input    Asukoha täpsustus
+    Select From List By Label    id=start-date-day-select    1
+    Select From List By Label    id=start-date-month-select    January
+    Select From List By Label    id=start-date-year-select    2024
+    Select From List By Label    id=end-date-day-select    31
+    Select From List By Label    id=end-date-month-select    December
+    Select From List By Label    id=end-date-year-select    2024
+    Input Text    id=team-member-input    Meeskonna liige
+    Wait Until Page Contains Element    xpath=//*[contains(text(), 'Meeskonna liige')]
+    Click Element    xpath=//*[contains(text(), 'Meeskonna liige')]
+    Select From List by Index    id=related-goals-select    1
+    Select From List by Index    id=related-subjects-select    1
+    Input Text    id=other-tags-input    Muud sildid
+    Input Text    id=problem-understanding-input    Probleemi mõistmine
+    Input Text    id=solution-idea-input    Lahendusidee
+    Input Text    id=project-plan-input    Projekti plaan ja elluviimine
+    Input Text    id=results-conclusions-input    Tulemused ja järeldused
+    Input Text    id=add-link-input    drive.google.com
+    Input Text    id=add-youtube-link-input    YouTube.com
+    Click Button    id=publish-button
+    Wait Until Page Contains    Projekt on edukalt avaldatud!
+    Click Button    id=next-button
+    Close Browser
+
+Test Case 7: Sisse logitud vaade - > Projekti loomine jättes kohustuslikud väljad täitmata
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    Click Button    id=create-project-button
+    Wait Until Page Contains    Projekti loomine
+
+    Input Text    id=project-title    Testprojekt
+    Click Button    id=project-instructor-search
+    Input Text    id=project-instructor-search    Juhendaja nimi
+    Wait Until Element Is Visible    xpath=//*[@class='ant-select-item-option-content']
+    Click Element    xpath=//*[@class='ant-select-item-option-content']
+    Click Button    id=project-create-next-button
+    Wait Until Page Contains    Kõik kohustuslikud väljad ei ole täidetud!
+    Close Browser
+
+Test Case 8: Sisse logitud vaade - > Projekti loomise valikulistelt väljadelt tagasi liikumine
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    Click Button    id=create-project-button
+    Wait Until Page Contains    Projekti loomine
+
+    Input Text    id=title-input    Test projekt
+    Input Text    id=project-description    Projekti lühitutvustus
+    Select From List by Index    id=proovikivi-select    1
+    Click Element    id=supervisor-input
+    Input Text    id=supervisor-input    Juhendaja
+    Wait Until Page Contains    Juhendaja Nimi
+    Click Element    xpath=//*[contains(text(), 'Juhendaja Nimi')]
+    Click Button    id=next-button
+    Wait Until Page Contains    Nüüd saad hakkata projektile sisu looma
+    
+    Click Button    id=project-create-back-button
+    Wait Until Page Contains    Projekti loomine
+    Close Browser
+
+Test Case 9: Sisse logitud vaade - > Projekti loomise katkestamine
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    Click Button    id=create-project-button
+    Wait Until Page Contains    Projekti loomine
+
+    Input Text    id=title-input    Test projekt
+
+    Click Button    id=project-create-cancel-button
+    Wait Until Page Contains    Teie projekti loomine katkestatakse!
+    Click Button    id=project-cancel-ok-button
+    Close Browser
+
+Test Case 10: Sisse logitud vaade - > Projekti lemmikuks lisamine
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    Click Button    id=all-projects-button
+
+    Click Button    id=view-full-project-button
+    Click Button    id=add-to-favourites-button
+
+    Close Browser
+
+Test Case 11: Sisse logitud vaade - > Kasutaja profiili andmete uuendamine korrektsete andmetega
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    Click Button    id=menu-button
+    Click Button    id=my-profile-button
+    
+    Input Text    id=full-name-field    New Full Name
+    Input Text    id=email-field    newemail@example.com
+    Select From List by Value    id=gender-field    1
+    Select From List by Index    id=birth-day-field    1
+    Select From List by Index    id=birth-month-field    1
+    Select From List by Index    id=birth-year-field    1
+    Select From List by Value    id=user-type-field    1
+
+    Click Button    id=remove-institution-button
+    Input Text    id=institution-search-field    New Institution
+    Click Element    xpath=//*[@id="institution-list"]/div/button[contains(text(), "Vali asutus")]
+
+    Input Text    id=password-field    NewPassword123
+    Input Text    id=confirm-password-field    NewPassword123
+
+    Click Button    id=delete-profile-picture-button
+    Wait Until Element Is Not Visible    id=profile-picture
+    Click Button    id=upload-profile-picture-button
+    Choose File    id=file-input    path/to/profile_picture.jpg
+    Click Button    id=confirm-upload-button
+
+    Click Button    id=next-button
+    Close Browser
+
+Test Case 12: Sisse logitud vaade - > Kasutaja profiili andmete uuendamine ebakorrektsete andmetega 
+    Open Browser    ${PROJECTS_URL}    ${BROWSER}
+    Maximize Browser Window
+
+    Click Button    id=menu-button
+    Click Button    id=my-profile-button
+    Click Button    id=edit-profile-button
+
+    Select From List by Index    id=gender-field    1
+    Select From List by Index    id=birth-day-field    1
+    Select From List by Index    id=birth-month-field    1
+    Select From List by Index    id=birth-year-field    1
+
+    Click Button    id=remove-institution-button
+    Input Text    id=institution-search-field    New Institution
+    Click Element    xpath=//*[@id="institution-list"]/div/button[contains(text(), "Vali asutus")]
+
+    Input Text    id=password-field    Password123
+    Input Text    id=confirm-password-field    Password123
+
+    Click Button    id=delete-profile-picture-button
+    Wait Until Element Is Not Visible    id=profile-picture
+    Click Button    id=upload-profile-picture-button
+    Choose File    id=file-input    path/to/profile_picture.jpg
+    Click Button    id=confirm-upload-button
+
+    Click Button    id=next-button
+    Wait Until Element Is Visible    id=mandatory-fields-error
+
+    Close Browser
