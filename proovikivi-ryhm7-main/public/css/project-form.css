@@ -1,0 +1,422 @@
+body {
+    padding-top: 80px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: white;
+}
+
+.required {
+    color: #DA0000;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.content-container {
+    width: 100%;
+}
+
+h1 {
+    color: #000088;
+    width: 100%;
+    margin:0;
+    padding: 0;
+    padding-top: 16px;
+    text-align: left;
+
+    padding-left: 40px;
+    box-sizing: border-box;
+    margin-left: 40px;
+    font-weight: 600;
+    font-size: 44px;
+}
+
+p, h3 {
+    text-align: left;
+    width: 100%;
+    padding-left: 40px;
+    box-sizing: border-box;
+    margin-left: 40px;
+    font-weight: 600;
+}
+
+.dataContainer,
+.dataContainerT {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dataContainer{
+    margin-bottom: 24px;
+}
+
+.dataContainerT{
+    margin-bottom: 12px;
+}
+
+label {
+    width: 80%;
+    margin-bottom: 8px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: left;
+}
+
+input,
+select,
+textarea {
+    width: 80%;
+    max-width: 100%;
+    font-size: 18px;
+    border-radius: 15px;
+    padding: 3px 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    box-sizing: border-box;
+}
+
+
+.dataContainer input,
+.dataContainer select {
+    height: 45px;
+}
+
+.dataContainer select option[disabled] {
+    text-align: center;
+}
+
+.dataContainer input::placeholder,
+.dataContainer select::placeholder {
+    text-align: center;
+}
+
+.dateContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.dateInputContainer label {
+    margin-bottom: 6px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.dateInputContainer {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    flex-direction: column;
+    width: 39%;
+    margin-right: 2%;
+}
+
+.dateInputContainer:last-child {
+    margin-right: 0;
+    width: 39%;
+}
+
+.dateInputContainer input,
+.dateInputContainer select {
+    width: 100%;
+    height: 45px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    border-radius: 15px;
+    padding: 3px 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input:focus,
+aselect:focus {
+    border-color: #000088;
+}
+
+textarea {
+    height: 250px;
+    resize: vertical;
+    margin: 0;
+    padding: 16px;
+    padding-top: 12px;
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    
+}
+
+.char-counter {
+    width: 80%;
+    max-width: 100%;
+    text-align: right;
+    font-size: 14px;
+    color: #666;
+    font-weight: 400;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.left-buttons,
+.submitButtonContainer {
+    width: 80%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+}
+
+.left-buttons{
+    margin: 0;
+    margin-top: 8px;
+    padding: 0;
+}
+
+.submitButtonContainer {
+    width: 80%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+}
+
+.left-buttons button {
+    width: 33%;
+    background-color: #ffffff;
+    color: #000000;
+    border: #000000 solid 1px!important;
+    font-size: 25px;
+    height: 50px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+}
+
+.submitButtonContainer button {
+    width: 100%;
+    background-color: #000088;
+    color: white;
+    font-size: 32px;
+    height: 64px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 0;
+    margin-bottom: 44px;
+    margin-top: 26px;
+    padding: 0;
+}
+
+.left-buttons button:hover {
+    background-color: #000088;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+.submitButtonContainer button:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#institutionsDropdown {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
+    width: 80%; 
+    box-sizing: border-box;
+}
+
+.dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+.a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 640px;
+    height: 45px;
+}
+
+.tag {
+    background-color: #e0e0e0;
+    border-radius: 20px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.fa-regular {
+    padding: 2px;
+}
+
+.dataInputHeading {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: left;
+    width: 80%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 40px;
+    box-sizing: border-box;
+}
+
+#lisatudSildidHeader {
+    text-align: left;
+    margin-top: 10px;
+    font-size: 1.2em;
+    display: block;
+    color: #333;
+    width: 80%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 40px;
+    box-sizing: border-box;
+}
+
+#croppieContainer {
+    display: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+    margin-top: 10px;
+}
+
+#photoInput {
+    border: none;
+    box-shadow: none;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+#photoInput + label,
+#clearImageButton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #000088;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 600;
+    line-height: 35px;
+}
+
+#photoInput + label {
+    min-width: 120px;
+    height: 15px;
+}
+
+#clearImageButton {
+    min-width: 160px;
+    height: 35px;
+}
+
+.cover-pic-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+    width: 100%;
+}
+
+.button-containerN {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.submitButton {
+    background-color: #000088;
+    color: white;
+    font-size: 20px;
+    height: 45px;
+    width: 80%;
+    border-radius: 15px;
+    cursor: pointer;
+    border: none;
+    margin-top: 20px;
+}
+
+.submitButton:hover {
+    background-color: #000066;
+}
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 1rem;
+    }
+
+    .dateContainer {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .dateInputContainer {
+        width: 80%;
+        margin-left: 10%;
+    }
+
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 32px;
+        margin-left: 0;
+    }
+
+    h3, p {
+        margin-left: 0;
+    }
+
+    .navbar .hamburger {
+        font-size: 1.25rem;
+    }
+
+    .navbar img {
+        height: 30px;
+    }
+}

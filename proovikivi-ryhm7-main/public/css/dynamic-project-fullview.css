@@ -1,0 +1,366 @@
+:root {
+    --base-font-size: 10px;
+}
+
+html {
+    font-size: var(--base-font-size);
+}
+
+p{
+    overflow: hidden!important;
+}
+
+body, html {
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 0;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    background-color: white;
+    font-weight: 450;
+    padding-left: 0.625em;
+    padding-top: 3em;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.navbar img {
+    width: 19.625em;
+    height: auto;
+    margin-right: 1.5em;
+    margin-left: 5%;
+}
+
+.navbar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navbar li {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #7d7d7d;
+    font-size: 2em;
+}
+
+.navbar a:hover {
+    color: #000088;
+}
+
+.main-content {
+    overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+.top-section {
+    width: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+}
+
+.title-section {
+    width: 100%;
+    text-align: left;
+    padding: 2em 11em 0;
+    box-sizing: border-box;/*midagi millega mängida*/
+}
+
+.title-section h1 {
+    font-size: 4em;
+    margin: 0;
+    color: #000000; 
+    font-weight: 600; 
+    padding-bottom: 0.25em;
+    overflow: hidden;
+    max-width: 27.5em!important;
+}
+
+.carousel-wrapper {
+    width: 117.5em;
+    position: relative;
+    margin-left: 11.5em;
+}
+
+.carousel {
+    margin-bottom: 0;
+    margin-top: 0;
+    overflow: hidden; /* Ensure the items do not overflow the carousel */
+}
+
+.carousel-item-box {
+    justify-content: center!important;
+    align-items: center!important;
+    min-width: 6.66em!important;
+    max-width: 6.66em!important;
+    height: 2em!important;
+    margin-left: 0.8em!important;
+    box-sizing: border-box!important;
+    padding: 0!important;
+    background-color: #ffffff!important;
+    border: 0.1em solid #7d7d7d!important;
+    border-radius: 0.5em!important;
+    font-size: 2em!important;
+}
+
+.carousel-item-box p {
+    margin-top: 0.25em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-control {
+    background: none;
+    border: none;
+    font-size: 3em;
+    cursor: pointer;
+    position: absolute; 
+    top: -3px;
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: 0;
+}
+
+.carousel-control.next {
+    right: 0;
+}
+
+.main-section {
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+.container {
+    padding: 4em;
+    box-sizing: border-box;
+}
+
+.left-container {
+    margin-left: 7.25em;
+    max-width: 100em;
+}
+
+.right-container {
+    min-width: 20em; /* Adjust as necessary */
+}
+
+.project-image {
+    border-radius: 3em;
+    width:49.6875em;
+    height: 27.9375em;
+}
+
+.container.right-container p{
+    max-width:15em;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #000000;
+}
+
+.container.right-container h3{
+    max-width:15em;
+    font-size: 2em;
+    font-weight: 600;
+
+}
+
+button.accordion.right-accordion{
+    background-color: transparent;
+    padding: 0;
+    margin-top: 1em;
+    max-width:15em;
+    font-size: 2em;
+    font-weight: 600;
+    color: #000000;
+    text-align: left!important;
+    cursor: pointer;
+    outline: none;
+    transition: 0.4s;
+}
+
+.accordion {
+    color: #000000;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 2em;
+    font-weight: 600;
+    transition: 0.4s;
+    background-color: #ffffff;
+}
+
+.accordion:after {
+    content: '\22C1';
+    font-size: 1.25em;
+    color: #000000;
+    float: right;
+    margin-left: 0.5em;
+    background-color: #ffffff;
+}
+
+
+.active:after {
+    content: "\22C0";
+    background-color: #ffffff;
+}
+
+.active, .accordion:hover {
+    background-color: #ffffff;
+}
+
+.panel {
+    padding: 0;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.right-accordion:after {
+    margin-left: 0;
+    float: none;
+    display: inline;
+}
+
+.right-accordion.active, .right-accordion:hover {
+    background-color: transparent;
+}
+
+.likeBtn {
+    min-width: 8.5em;
+    min-height: 2.5em;
+    background-color: #000088;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 0.5em;
+    font-size: 2.125em;
+    font-weight: 540;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 1em;
+    border-radius: 0.75em;
+}
+
+.likeBtn i {
+    font-size: 1.4em;
+}
+
+.likeBtn.liked i {
+    color: #da0000;
+}
+
+.likeBtn.liked {
+    color: white;
+}
+
+.fa-heart:before{
+
+    padding-left: 0.3333em;
+}
+
+/* Proovikivi styling */
+.proovikivi-img {
+    position: relative;
+    width: 18em;
+    height: 23.75em;
+    border-radius: 1.25em;
+}
+
+.proovikivi-overlay {
+    position: relative;
+    width: 18em;
+    height: 23.75em;
+    transition: transform 0.3s ease-in-out;
+}
+
+.proovikivi-img {
+    transition: filter 0.3s ease-in-out;
+}
+
+.proovikivi-text {
+    position: absolute;
+    bottom: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    width: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+    transition: bottom 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.proovikivi-text h3 {
+    margin: 0;
+    position: relative;
+    font-weight: 600;
+    font-size: 2em;
+    overflow: hidden;
+}
+
+.proovikivi-text h3 {
+    overflow: hidden;
+}
+
+.proovikivi-text h3::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.proovikivi-image:hover .proovikivi-img {
+    filter: brightness(50%);
+}
+
+.proovikivi-image:hover .proovikivi-text {
+    bottom: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.editButton {
+    cursor: pointer;
+    z-index: 1001;
+    background-color: #ffffff;
+    border-color: #ffffff;
+    padding:0;
+    border:0
+}
+
+.buttonContainer{
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}

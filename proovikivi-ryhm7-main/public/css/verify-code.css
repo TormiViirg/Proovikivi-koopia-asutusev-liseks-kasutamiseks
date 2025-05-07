@@ -1,0 +1,178 @@
+:root {
+    --base-font-size: 10px; 
+}
+
+html {
+    font-size: var(--base-font-size);
+}
+
+body, html {
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageLogo {
+    position: absolute;
+    width: 40em;
+    height: auto;
+    top: 0;
+    left: 0;
+    margin-top: 5em;
+    margin-left: 5%;
+}
+
+.formContainer {
+    display: flex; 
+    flex-direction: column; 
+    width: 45em;
+    border-radius: 3em;
+    padding: 6em 12em;
+    background-size: cover;
+    background-position: center;
+    background-image: url('/img/Frosted-Glass-2.jpg');
+}
+
+h1 {
+    font-size: 4.75em;
+    color: #000088;
+    font-weight: 600;
+    margin: 0.625em 0;
+    text-align: center;
+}
+
+a,p{
+    font-size: 1.25em;
+    margin: 0;
+    color: #7d7d7d;
+    font-weight: 700;
+    margin-top: 0.125em;
+}
+
+p{
+    padding-left: 1em;
+}
+
+a{
+    padding-right: 1em;
+}
+
+.code-container {
+    display: flex;
+    gap: 1.125em;
+    margin-bottom: 2.5em;
+    padding: 0;
+    justify-content: center;
+}
+
+.code-container input {
+    width: 3em;
+    height: 4.5em;
+    padding: 0;
+    text-align: center;
+    border: none;
+    border-radius: 0.625em;
+    font-weight: 420;
+    font-size: 2.125em;/*circle back*/
+}
+
+.verification-form {
+    display: flex; 
+    flex-direction: column; 
+    border-radius: 3em;
+    padding-top: 3.5em;
+    padding-bottom: 5em;
+    padding-left: 7.85em;
+    padding-right: 7.85em;
+    margin-top: 3em;
+    background-size: cover;
+    background-position: center;
+    background-image: url('/img/Frosted-Glass-2.png');
+}
+
+input:focus, input:focus-visible {/*pole õrna aimugi miks ei tööta*/
+    border-color: #000088!important;
+}
+
+.buttonContainer, .resend{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+    
+.backButton:hover, .submitButton:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.backButton {
+    width: 34.5%;
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: none;
+    border:none;
+    font-size: 2.25em;
+    font-weight: 600;
+    height: 2.25em;
+    border-radius: 0.667em;
+    cursor: pointer;
+}
+
+.submitButton {
+    width: 34.5%;
+    background-color: #000088;
+    color: #ffffff;
+    box-shadow: none;
+    border:none;
+    font-size: 2.25em;
+    font-weight: 600;
+    height: 2.225em;
+    border-radius: 0.667em;
+    cursor: pointer;
+}
+@media screen and (max-width: 768px) {
+    .formContainer, .verification-form {
+        width: 90%;
+        padding: 2em 1.75em;
+        margin: 2em;
+    }
+
+    .pageLogo {
+        width: 60%;
+        margin-top: 2em;
+        margin-left: 10%;
+    }
+
+    h1 {
+        font-size: 3em;
+    }
+
+    a, p {
+        font-size: 1em;
+    }
+
+    .code-container {
+        gap: 0.75em;
+    }
+
+    .code-container input {
+        width: 2em;
+        height: 3em;
+        font-size: 1.5em;
+    }
+
+    .backButton, .submitButton {
+        width: 45%;
+        font-size: 1.5em;
+        height: 2.5em;
+    }
+}

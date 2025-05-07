@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/projects.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <title>Projects</title>
+</head>
+<body>
+
+    <nav class="navbar">
+        <img src="/img/proovikivi_logo.png" alt="proovikivi logo">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu" id="menu">
+            <ul>
+                <li><a href="/project-form">Loo projekt</a></li>
+                <li><a href="/projects">Projektid</a></li>
+                <li><a href="https://proovikivi.ee/portfoolio/">Proovikivid</a></li>
+                <li><a href="/profile">Minu profiil</a></li>
+                <li><a href="/logout">Logi välja</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        
+        <div class="search-engine">
+
+            <form action="/projects" method="get" class="search-engine-form" id="projects-form">
+
+                <input class="search-bar" type="text" id="search-words" name="search" placeholder="Otsige asukohta, nime, silte..." value="<%= searchQuery %>">
+            
+                <div class="searchNav-filter">
+                    <div id="searchNav" class="searchNav">
+                        <button type="submit" id="search-nav1" class="search-nav-option" name="nav-option" value="My-Projects">Minu projektid</button>
+                        <button type="submit" id="search-nav2" class="search-nav-option" name="nav-option" value="Favourites">Lemmikud</button>
+                        <button type="submit" id="search-nav3" class="search-nav-option" name="nav-option" value="All-Projects">Kõik projektid</button>
+                    </div>
+
+                    <input type="hidden" id="search-option" name="searchOption" value="<%= searchOptionQuery %>">
+            
+                    <select name="filters" id="filters">
+                        <option value="newest" <%= filterQuery === 'newest' ? 'selected' : '' %>>Uuemad</option>
+                        <option value="oldest" <%= filterQuery === 'oldest' ? 'selected' : '' %>>Vanemad</option>
+                        <option value="popular" <%= filterQuery === 'popular' ? 'selected' : '' %>>Populaarsed</option>
+                        <option value="ongoing" <%= filterQuery === 'ongoing' ? 'selected' : '' %>>Käimasolevad</option>
+                        <option value="ended" <%= filterQuery === 'ended' ? 'selected' : '' %>>Lõppenud</option>
+                    </select>
+                    
+                </div>
+
+            </form>
+
+        </div>
+
+        <div id="all-project-container" class="all-project-container">
+
+            <% projects.forEach(project => { %>
+
+                <div class="project-container">
+
+                    <% if (project.image) { %>
+                        <img class="project_background" src="data:image/jpeg;base64,<%= project.image %>" alt="<%= project.title %> Image" loading="lazy">
+                    <% } %>
+                    
+                    <div class="project-top">
+
+                        <div class="top-container">
+
+                            <% if (project.profile_picture) { %>
+                                <img class="project-profile_picture" src="data:image/jpeg;base64,<%= project.profile_picture %>" alt="<%= project.username %> Avatar" onerror="this.src='/img/user_placeholder.png'" loading="lazy">
+                            <% } else { %>
+                                <img class="project-profile_picture" src="/img/user_placeholder.png" alt="Placeholder Image" loading="lazy">
+                            <% } %>
+
+                            <div class="text-container">
+                                <p class="username"><%= project.username %></p>
+                                <p class="title"><%= project.title %></p>
+                            </div>
+
+                            <!--
+                            <div class="menu-button">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                            -->
+
+                        </div>
+
+                        <img class="frosted-top" src="/img/Frosted-Glass-2.jpg"> 
+
+                    </div>
+                    
+                    <a class="redirect" href="/project/<%= project.id %>">
+                        <% if (project.image) { %>
+                            <img class="project_middle" src="data:image/jpeg;base64,<%= project.image %>" alt="<%= project.title %> Image" loading="lazy">
+                        <% } else { %>
+                            <img class="project_middle" src="img/placeholder.png" alt="<%= project.title %> Image" loading="lazy">
+                        <% } %>
+                    </a>
+
+                    <div class="project-bottom">
+
+                        <div class="bottom-container">
+
+                            <div class="column1 column">
+                                <div class="like-container" data-project-id="<%= project.id %>">
+                                    <form id="like-form-<%= project.id %>" class="like-container">
+                                        <img class="like" src="/img/<%= project.is_favourite === 1 ? 'full-like.png' : 'empty-like.png' %>" onclick='submitLikeForm("<%= project.id %>")'>
+                                        <p class="like-number" id="like-number-<%= project.id %>"><%= project.favourite_count %></p>
+                                        <input type="hidden" class="is-liked" name="isLiked" value="<%= project.is_favourite %>">
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="column2 column">
+                                <p class="location"><%= project.location_name %></p>
+                            </div>
+
+                            <div class="column3 column">
+                                <% if (project.start_date === 'None' || project.end_date === 'None') { %>
+                                    <p class="start-end">Kuupäev puudub</p>
+                                <% } else { %>
+                                    <p class="start-end"><%= project.start_date %> - <%= project.end_date %></p>
+                                <% } %>
+                            </div>
+
+                        </div>
+
+                        <img class="frosted-bottom" src="/img/Frosted-Glass-2.jpg">
+
+                    </div>
+
+                </div>
+
+            <% }); %>
+
+        </div>
+
+        <div class="project-nav">
+            <form id="pageNavigationForm">
+              <button type="button" id="firstPage">&lt;&lt;&lt;</button>
+              <button type="button" id="prevPage">&lt;</button>
+              <span>
+                <input type="number" id="currentPage" name="page" min="1" value="<%= pageQuery %>">
+                of <span id="totalPages"><%= totalCount %></span>
+              </span>
+              <button type="button" id="nextPage">&gt;</button>
+              <button type="button" id="lastPage">&gt;&gt;&gt;</button>
+            </form>
+        </div>
+
+    </div>
+
+    <a class="add-button" href="/project-form"><img class="add-button-img" src="img/add-button.png"></a>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        });
+    </script>
+
+    <script>
+        function submitLikeForm(projectId) {
+            const form = $('#like-form-' + projectId);
+            const isLiked = form.find('.is-liked').val() === '1';
+            const newIsLiked = !isLiked;
+            const likeNumberElement = $('#like-number-' + projectId);
+            let likeCount = parseInt(likeNumberElement.text());
+
+            $.ajax({
+                url: '/projects/like',
+                type: 'POST',
+                data: {
+                    projectId: projectId,
+                    isLiked: newIsLiked
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the like status and count in the DOM
+                        form.find('.is-liked').val(newIsLiked ? '1' : '0');
+                        form.find('.like').attr('src', '/img/' + (newIsLiked ? 'full-like.png' : 'empty-like.png'));
+                        
+                        // Increment or decrement the like count
+                        if (newIsLiked) {
+                            likeCount++;
+                        } else {
+                            likeCount = Math.max(0, likeCount - 1);
+                        }
+                        likeNumberElement.text(likeCount);
+                        $('#favourite-count-' + projectId).text(likeCount); // Also update the favourite count span
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    </script>
+
+    <script src="script/button-update.js"></script>
+
+    <script src="script/search.js"></script>
+
+</body>
+</html>

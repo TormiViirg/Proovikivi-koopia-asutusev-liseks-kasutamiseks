@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/mandatory-project-form.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css"/>
+    <title>Mandatory form</title>
+</head>
+<body>
+    <body>
+    <div class="navbar">
+        <img src="/img/proovikivi_logo.png" alt="Logo">
+        <ul>
+            <li><a href="/projects">Projektid</a></li>
+            <li><a href="https://proovikivi.ee/">Proovikivi</a></li>
+            <li><a href="https://kogukond.proovikivi.ee/wp-login.php?redirect_to=https%3A%2F%2Fkogukond.proovikivi.ee%2F&bp-auth=1&action=bpnoaccess">Kogukond</a></li>
+            <li><a href="/profile">Minu profiil</a></li>
+        </ul>
+    </div>
+    
+    <div class="content-container">
+        <h1>Projekti loomine</h1>
+        <h2>Kohustuslike väljade alaleht</h2>
+        <form id="mandatoryProjectForm" method="post" action="/mandatory-project-form" enctype="multipart/form-data">
+            <div class="dataContainer">
+                <label for="projectnameInput">Projekti pealkiri<span class="required"></span></label>
+                <input type="text" id="projectnameInput" name="projectnameInput" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="proovikiviInput">Millise Proovikiviga seotud?<span class="required"></span></label>
+                <select name="proovikiviInput" id="proovikiviInput" required>
+                    <option value="" disabled selected hidden>-Vali Proovikivi-</option>
+                    <% proovikivi.forEach(proovikivi => { %>
+                        <option value="<%= proovikivi.id %>"><%= proovikivi.title %></option>
+                    <% }); %>
+                </select>
+            </div>
+            
+            <div class="button-container">
+                <div class="left-buttons">
+                    <button type="button" onclick="window.history.back()" class="submitButton">Tagasi</button>
+                    <button type="button" onclick="deleteProject()" class="submitButton">Kustuta</button>
+                </div>
+                <div class="submitButtonContainer">
+                    <button type="submit" class="submitButton">Avalda</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        tippy('#projectnameInput', {
+            content: 'Siia kirjutab Maarja projektide raison d\'etre',
+            animation: 'scale',
+            theme: 'light',
+        });
+
+        tippy('#proovikiviInput', {
+            content: 'Siia kirjutab Maarja proovikivide raison d\'etre',
+            animation: 'scale',
+            theme: 'light',
+        });
+    </script>
+</body>
+</html>

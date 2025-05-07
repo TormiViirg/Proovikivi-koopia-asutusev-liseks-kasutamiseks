@@ -1,0 +1,6 @@
+
+proovikiviconfig.js
+node_modules
+node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node
+.DS_Store
+public/.DS_Store

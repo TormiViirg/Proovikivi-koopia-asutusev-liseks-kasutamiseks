@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/signup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css"/>
+
+    <link rel="stylesheet" href="/css/navbar.css">
+    <title>Minu profiil</title>
+
+    <style>
+        .profile-page .formContainer {
+            margin-top: 70px; 
+        }
+    </style>
+</head>
+<body class="profile-page">
+    <nav class="navbar">
+        <img src="/img/proovikivi_logo.png" alt="proovikivi logo">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu" id="menu">
+            <ul>
+                <li><a href="/project-form">Loo projekt</a></li>
+                <li><a href="/projects">Projektid</a></li>
+                <li><a href="https://proovikivi.ee/portfoolio/">Proovikivid</a></li>
+                <li><a href="/profile">Minu profiil</a></li>
+                <li><a href="/logout">Logi välja</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="formContainer">
+        <h1>Minu profiil</h1>
+
+        <form method="post" class="formContent" enctype="multipart/form-data">
+            <div class="dataContainer">
+                <label for="username">Täisnimi</label>
+                <input type="text" id="username" name="username" value="<%= user.username %>" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="email">E-post</label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="gender">Sugu</label>
+                <select name="gender" id="gender" required>
+                    <% genders.forEach(gender => { %>
+                        <option value="<%= gender.id %>" <%= user.gender_id === gender.id ? 'selected' : '' %>><%= gender.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="dataContainer">
+                <label for="birthdate">Sünnikuupäev</label>
+                <input type="date" id="birthdate" readonly>
+                <input type="hidden" id="originalBirthdate" name="birthdate">
+            </div>
+
+            <div class="dataContainer">
+                <label for="userType">Kasutajatüüp</label>
+                <select name="userType" id="userType" required>
+                    <% userTypes.forEach(userType => { %>
+                        <option value="<%= userType.id %>" <%= user.user_type_id === userType.id ? 'selected' : '' %>><%= userType.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="dataContainer">
+                <label for="institutionsInput">Seotud asutused<i class="fa-regular fa-circle-question" id="institution"></i></label>
+                <input type="text" id="institutionsInput" name="institutionsInput" placeholder="Otsi asutusi" autocomplete="off" value="<%= user.institution_id ? institutions.find(i => i.id === user.institution_id).name : '' %>">
+                <input type="hidden" id="institutionId" name="institutionId" value="<%= user.institution_id %>">
+                <div id="institutionsDropdown" class="dropdown"></div>
+            </div>
+            
+            <div class="profile-pic-container">
+                <label for="photoInput">Profiilipilt</label>
+                <div id="croppieContainer" style="display: none;"></div>
+            
+                <% if (user.profile_picture) { %>
+                    <img src="<%= user.profile_picture %>" alt="Profile Picture" class="profilePicture">
+                <% } else { %>
+                    <p>Profiilipilt puudub</p>
+                <% } %>
+            
+                <input type="file" id="newProfilePicture" name="newProfilePicture">
+            
+                <input type="hidden" id="croppedImage" name="croppedImage">
+            </div>
+
+            <div class="dataContainer">
+                <button class="submitButton" type="submit">Salvesta</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+tippy('#institution', {
+            content: 'Lisa sinuga seotud asutus, selleks võib olla kool, noortekeskus vms',
+        });
+
+        //Navbar
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        });
+
+        //profiilipilt
+    document.addEventListener('DOMContentLoaded', function() {
+    const croppieContainer = document.getElementById('croppieContainer');
+    const newProfilePicture = document.getElementById('newProfilePicture');
+    const croppedImageInput = document.getElementById('croppedImage');
+
+    let croppieInstance;
+
+    newProfilePicture.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (!croppieInstance) {
+                    croppieInstance = new Croppie(croppieContainer, {
+                        viewport: { width: 150, height: 150, type: 'circle' },
+                        boundary: { width: 200, height: 200 },
+                        showZoomer: true
+                    });
+                }
+
+                croppieInstance.bind({
+                    url: e.target.result
+                }).then(function() {
+                    croppieContainer.style.display = 'block';
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (croppieInstance) {
+            croppieInstance.result('base64').then(function(base64) {
+                croppedImageInput.value = base64;
+                submitForm(event.target);
+            });
+        } else {
+            submitForm(event.target);
+        }
+    });
+
+    function submitForm(form) {
+        const institutionsInput = form.querySelector('#institutionsInput');
+        if (institutionsInput && institutionsInput.value.trim() === '') {
+            const institutionIdInput = form.querySelector('#institutionId');
+            if (institutionIdInput) {
+                institutionIdInput.value = '';
+            }
+        }
+
+        form.submit(); 
+    }
+
+    // Fuse.js setup for institutions autocomplete
+    const institutions = <%- JSON.stringify(institutions) %>;
+    const fuse = new Fuse(institutions, {
+        keys: ['name'],
+        threshold: 0.3
+    });
+
+    const institutionsInput = document.getElementById('institutionsInput');
+    const institutionsDropdown = document.getElementById('institutionsDropdown');
+    const institutionHiddenInput = document.getElementById('institutionId');
+
+    institutionsInput.addEventListener('input', () => {
+        const searchText = institutionsInput.value;
+        const results = fuse.search(searchText);
+
+        institutionsDropdown.innerHTML = '';
+        institutionsDropdown.style.display = results.length > 0 ? 'block' : 'none';
+
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.textContent = result.item.name;
+            div.classList.add('dropdown-item');
+            div.addEventListener('click', () => {
+                institutionsInput.value = result.item.name;
+                institutionHiddenInput.value = result.item.id;
+                institutionsDropdown.style.display = 'none';
+            });
+            institutionsDropdown.appendChild(div);
+        });
+    });
+
+    // Setting birthdate values
+    const birthdateInput = document.getElementById('birthdate');
+    const originalBirthdateInput = document.getElementById('originalBirthdate');
+    const birthdate = new Date('<%= user.birthdate %>');
+    originalBirthdateInput.value = birthdate.toISOString().split('T')[0];
+    birthdate.setDate(birthdate.getDate() + 1);
+    const formattedBirthdate = birthdate.toISOString().split('T')[0];
+    birthdateInput.value = formattedBirthdate;
+});
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/project-form.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <script src="/script/multiselect-dropdown.js"></script>
+    <script src="/script/project-form-croppie.js" defer></script>
+    <script src="/script/project-tippy.js" defer></script>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css"/>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
+    <title>Projekti täiendamine</title>
+    
+</head>
+<body>
+    
+    <nav class="navbar">
+        <img src="/img/proovikivi_logo.png" alt="proovikivi logo">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu" id="menu">
+            <ul>
+                <li><a href="/project-form">Loo projekt</a></li>
+                <li><a href="/projects">Projektid</a></li>
+                <li><a href="https://proovikivi.ee/portfoolio/">Proovikivid</a></li>
+                <li><a href="/profile">Minu profiil</a></li>
+                <li><a href="/logout">Logi välja</a></li>
+            </ul>
+        </div>
+    </nav>
+        
+    <div class="container">
+        <div class="formContainer">
+            <h1>Projekti täiendamine</h1>
+            <h3>Siin saad projekti täiendada või muuta</h3>
+            <p class="required">Kohustuslikud väljad*</p>
+            <form action="/project-update/<%= project.id %>" method="POST" enctype="multipart/form-data">
+                <div class="dataContainer">
+                    <label for="title">Projekti pealkiri <span class="required">*</span></label>
+                    <input type="text" id="title" name="title" value="<%= project.title %>" placeholder="Projekti pealkiri" required>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="proovikivi">Millise Proovikiviga seotud?<span class="required">*</span></label>
+                    <select id="proovikivi" name="proovikivi" required>
+                        <option value="">Vali proovikivi</option>
+                        <% proovikivi.forEach(p => { %>
+                            <option value="<%= p.id %>" <%= project.proovikivi_id === p.id ? 'selected' : '' %>><%= p.title %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="supervisor">Juhendaja <span class="required">*</span></label>
+                    <input type="text" id="supervisor" name="supervisor" value="<%= project.supervisor %>" placeholder="Juhendaja" required>
+                </div>
+
+                <div class="dateContainer">
+                    <div class="dateInputContainer">
+                        <label for="start_date">Algus</label>
+                        <input type="date" name="start_date" id="start_date" value="<%= project ? formatDate(project.start_date) : '' %>">
+                    </div>
+                    <div class="dateInputContainer">
+                        <label for="end_date">Lõpp</label>
+                        <input type="date" name="end_date" id="end_date" value="<%= project ? formatDate(project.end_date) : '' %>">
+                    </div>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="location">Asukoht</label>
+                    <select id="location" name="location">
+                        <option value="">Vali asukoht</option>
+                        <% locations.forEach(location => { %>
+                            <option value="<%= location.id %>" <%= project.location_id === location.id ? 'selected' : '' %>><%= location.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="locationSpecify">Asukoha täpsustus<i class="fa-regular fa-circle-question" id="locations"></i></label>
+                    <input type="text" id="locationSpecify" name="locationSpecify" value="<%= project.location_specify %>" placeholder="Lisa linnaosa või asula">
+                </div>
+
+                <div class="dataContainer">
+                    <label for="teamMember">Lisa meeskonnaliikmeid<i class="fa-regular fa-circle-question" id="members"></i></label>
+                    <input type="text" id="teamMember" name="teamMember" value="<%= project.team_member %>" placeholder="Meeskonnaliige">
+                </div>
+
+                <div class="dataContainer">
+                    <label for="relatedInstitution">Seotud asutus<i class="fa-regular fa-circle-question" id="institution"></i></label>
+                    <input type="text" id="relatedInstitutionInput" name="relatedInstitutionInput" placeholder="Otsi asutust" autocomplete="off" value="<%= project.relatedInstitution ? project.relatedInstitution.name : '' %>">
+                    <input type="hidden" id="relatedInstitution" name="relatedInstitution" value="<%= project.institution_id %>">
+                    <div id="relatedInstitutionDropdown" class="dropdown"></div>
+                </div>               
+
+                <div class="dataContainer">
+                    <label for="globalGoals">Seotud eesmärgid (kuni 3)<i class="fa-regular fa-circle-question" id="globalgoal"></i></label>
+                    <select id="globalGoals" name="globalGoals" multiple>
+                        <% globalGoals.forEach(goal => { %>
+                            <option value="<%= goal.id %>" <%= project.globalGoals && project.globalGoals.includes(goal.id.toString()) ? 'selected' : '' %>><%= goal.title %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="schoolSubjects">Seotud õppeaine(d) (kuni 3)</label>
+                    <select id="schoolSubjects" name="schoolSubjects" multiple>
+                        <% schoolSubjects.forEach(subject => { %>
+                            <option value="<%= subject.id %>" <%= project.schoolSubjects && project.schoolSubjects.includes(subject.id.toString()) ? 'selected' : '' %>><%= subject.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="tag">Lisa muid silte<i class="fa-regular fa-circle-question" id="tags"></i></label>
+                    <input type="text" id="tag" name="tag" value="<%= project.tag %>" placeholder="Lisa asjakohaseid silte nt #Loodus, #Koristus, #Metsad">  
+                </div>
+
+                <div class="dataContainer">
+                    <label for="problemDescription">Probleemi mõistmine / uurimine<i class="fa-regular fa-circle-question" id="problems"></i></label>
+                    <textarea id="problemDescription" name="problemDescription" placeholder="Probleemi kirjeldus..." maxlength="500"><%= project.problem_description %></textarea>
+                    <div id="problem_description_counter" class="char-counter">0/500 tähemärki</div>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="solutionIdea">Lahendus idee<i class="fa-regular fa-circle-question" id="solutions"></i></label>
+                    <textarea id="solutionIdea" name="solutionIdea" placeholder="Lahendus idee.." maxlength="500"><%= project.solution_idea %></textarea>
+                    <div id="solution_idea_counter" class="char-counter">0/500 tähemärki</div>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="projectPlan">Projekti plaan ja elluviimine<i class="fa-regular fa-circle-question" id="plans"></i></label>
+                    <textarea id="projectPlan" name="projectPlan" placeholder="Projekti plaan..." maxlength="500"><%= project.project_plan %></textarea>
+                    <div id="project_plan_counter" class="char-counter">0/500 tähemärki</div>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="resultsConclusions">Tulemused ja järeldused<i class="fa-regular fa-circle-question" id="results"></i></label>
+                    <textarea id="resultsConclusions" name="resultsConclusions" placeholder="Tulemused ja järeldused..." maxlength="500"><%= project.results_conclusions %></textarea>
+                    <div id="results_conclusion_counter" class="char-counter">0/500 tähemärki</div>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="contact">Lisa viis kontakteerumiseks<i class="fa-regular fa-circle-question" id="contacts"></i></label>
+                    <textarea id="contact" name="contact" placeholder="Lisa viis kontakteerumiseks" maxlength="125"><%= project.contact %></textarea>
+                    <div id="contact_counter" class="char-counter">0/125 tähemärki</div>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="webLink">Lisa link</label>
+                    <input type="url" id="webLink" name="webLink" value="<%= project.web_link %>" placeholder="Veebileht">
+                </div>
+
+                <div class="dataContainer">
+                    <label for="youtubeLink">Lisa projekti video (YouTube)<i class="fa-regular fa-circle-question" id="youtubes"></i></label>
+                    <input type="url" id="youtubeLink" name="youtubeLink" value="<%= project.youtube_link %>" placeholder="YouTube Link">
+                </div>
+
+                <div class="dataContainer">
+                    <button type="submit" class="submitButton">Salvesta</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        });
+    
+        // ASUTUSE OTSING
+        const institutions = <%- JSON.stringify(institutions) %>;
+        const fuse = new Fuse(institutions, {
+            keys: ['name'],
+            threshold: 0.3
+        });
+
+        const relatedInstitutionInput = document.getElementById('relatedInstitutionInput');
+        const relatedInstitutionDropdown = document.getElementById('relatedInstitutionDropdown');
+        const relatedInstitutionHiddenInput = document.getElementById('relatedInstitution');
+
+        relatedInstitutionInput.addEventListener('input', () => {
+            const searchText = relatedInstitutionInput.value;
+            const results = fuse.search(searchText);
+
+            relatedInstitutionDropdown.innerHTML = '';
+            relatedInstitutionDropdown.style.display = results.length > 0 ? 'block' : 'none';
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.textContent = result.item.name;
+                div.classList.add('dropdown-item');
+                div.addEventListener('click', () => {
+                    relatedInstitutionInput.value = result.item.name;
+                    relatedInstitutionHiddenInput.value = result.item.id;
+                    relatedInstitutionDropdown.style.display = 'none';
+                });
+                relatedInstitutionDropdown.appendChild(div);
+            });
+
+            if (results.length === 0) {
+                const div = document.createElement('div');
+                div.textContent = 'No results found';
+                div.classList.add('dropdown-item');
+                relatedInstitutionDropdown.appendChild(div);
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!relatedInstitutionInput.contains(event.target) && !relatedInstitutionDropdown.contains(event.target)) {
+                relatedInstitutionDropdown.innerHTML = '';
+                relatedInstitutionDropdown.style.display = 'none';
+            }
+        });
+
+    
+        // ET LAHTRIS OLEKS KINDEL ARV MÄRKE
+        function updateCharCounter(textareaId, counterId) {
+            const textarea = document.getElementById(textareaId);
+            const counter = document.getElementById(counterId);
+            const maxLength = textarea.getAttribute('maxlength');
+
+            textarea.addEventListener('input', function() {
+                const textLength = textarea.value.length;
+                counter.textContent = `${textLength}/${maxLength} tähemärki`;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCharCounter('problemDescription', 'problem_description_counter');
+            updateCharCounter('solutionIdea', 'solution_idea_counter');
+            updateCharCounter('projectPlan', 'project_plan_counter');
+            updateCharCounter('resultsConclusions', 'results_conclusion_counter');
+            updateCharCounter('contact', 'contact_counter');
+        });
+    
+        // KUSTUTAMINE
+        function deleteProject() {
+            if (confirm("Kas olete kindel, et soovite selle projekti kustutada?")) {
+                window.location.href = "/project-form"; 
+            }
+        }
+    </script>
+    
+</body>
+</html>

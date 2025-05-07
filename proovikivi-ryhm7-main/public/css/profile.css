@@ -1,0 +1,131 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+
+h1 {
+    color: #000088;
+    font-size: 42px;
+}
+
+p, .required {
+    color: #D30C0C;
+}
+
+.formContainer {
+    margin-left: 100px;
+    padding: 20px;
+    max-width: 600px;
+}
+
+.dataContainer {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+label {
+    padding: 6px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+select {
+    text-align: center;
+}
+
+input, select {
+    width: 100%;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #000088;
+}
+
+.submitButton {
+    background-color: #000088;
+    color: white;
+    font-size: 20px;
+    height: 50px;
+    width: 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    margin-top: 20px;
+}
+
+.submitButton:hover {
+    background-color: #000066;
+}
+
+.loginLink {
+    color: #000088;
+    padding: 5px 3px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.loginLink:hover {
+    text-decoration: underline;
+}
+
+.fa-solid, .fa-regular {
+    padding: 2px;
+}
+
+.profile-pic-container {
+    position: fixed;
+    right: 20%;
+    top: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px; 
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.profile-pic-container label {
+    margin-bottom: 5px;
+}
+
+.profile-pic-container input {
+    width: 100%;
+}
+
+#institutionsDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/signup.css">
+    <link rel="stylesheet" href="/css/error-popup.css">
+
+    <script src="/script/password-check.js" defer></script>
+    <script src="/script/signup-croppie.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css"/>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
+    <title>Loo konto</title>
+</head>
+<body>
+    <img src="/img/proovikivi_logo.png" alt="Proovikivi logo" class="pageLogo">
+
+    <div class="formContainer">
+        <h1>Loo kasutajakonto</h1>
+        <p>Kohustuslikud väljad*</p>
+
+        <!-- The Modal -->
+        <div id="errorModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h4 id="modalMessage"></h4>
+            </div>
+        </div>
+
+        <% if (typeof errorMessage !== 'undefined') { %>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var modal = document.getElementById("errorModal");
+                    var span = document.getElementsByClassName("close")[0];
+                    var message = "<%= errorMessage %>";
+                    document.getElementById("modalMessage").innerText = message;
+                    modal.style.display = "block";
+
+                    span.onclick = function() {
+                        modal.style.display = "none";
+                    };
+
+                    window.onclick = function(event) {
+                        if (event.target == modal) {
+                            modal.style.display = "none";
+                        }
+                    };
+                });
+            </script>
+        <% } %>
+
+        <form method="post" class="formContent">
+            <div class="dataContainer">
+                <label for="fullnameInput">Täisnimi<span class="required">*</span></label>
+                <input type="text" id="fullnameInput" name="fullnameInput" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="emailInput">E-post<span class="required">*</span></label>
+                <input type="email" name="emailInput" id="emailInput" placeholder="näide@email.com" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="genderInput">Sugu<span class="required">*</span></label>
+                <select name="genderInput" id="genderInput" required>
+                    <option value="" disabled selected hidden>-Vali sugu-</option>
+                    <% genders.forEach(gender => { %>
+                        <option value="<%= gender.id %>"><%= gender.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="dataContainer">
+                <label for="birthInput">Sünnikuupäev<span class="required">*</span></label>
+                <input type="date" name="birthInput" id="birthInput" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="userTypeInput">Kasutajatüüp<span class="required">*</span></label>
+                <select name="userTypeInput" id="userTypeInput" required>
+                    <option value="" disabled selected hidden>-Vali kasutajatüüp-</option>
+                    <% userTypes.forEach(userType => { %>
+                        <option value="<%= userType.id %>"><%= userType.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="dataContainer">
+                <label for="institutionsInput">Seotud asutus<i class="fa-regular fa-circle-question" id="institution"></i></label>
+                <input type="text" id="institutionsInput" name="institutionsInput" placeholder="Otsi asutusi" autocomplete="off">
+                <div id="institutionsDropdown" class="dropdown"></div>
+            </div>
+            
+            <div class="dataContainer">
+                <label for="passwordInput" class="popup-link">
+                    Parool
+                    <span class="required">*</span>
+                    <i class="fa-regular fa-circle-question" id="password"></i>
+                </label>
+                <input type="password" name="passwordInput" id="passwordInput" required>
+            </div>
+
+            <div class="dataContainer">
+                <label for="confirmPasswordInput">Kinnita parool<span class="required">*</span></label>
+                <input type="password" id="confirmPasswordInput" name="confirmPasswordInput" required>
+            </div>
+
+            <div class="dataContainer">
+                <div class="profile-pic-container">
+                    <label for="photoInput" >Profiilipilt</label>
+                    <div id="croppieContainer" style="display: none;"></div>
+            
+                    <input type="file" name="photoInput" id="photoInput" accept="image/*">
+                    <input type="hidden" id="croppedImage" name="croppedImage">
+                    
+                    <button type="button" id="deleteImageButton" style="display: none;">Eemalda pilt</button>
+                </div>
+            </div>
+
+            <div class="dataContainer">
+                <input class="submitButton" type="submit" name="userSubmit" value="Loo kasutajakonto">
+            </div>
+        </form>
+        <a href="/login" class="loginLink">Logi sisse siin <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <script>
+        tippy('#institution', {
+            content: 'Lisa sinuga seotud asutus, selleks võib olla kool, noortekeskus vms',
+            animation:'scale',
+        });
+
+        tippy('#password', {
+            content: 'Parool peab sisaldama: min. 8 tähemärki, numbreid ja tähti, suuri ja väikseid ',
+            animation:'scale',
+        });
+
+        const institutions = <%- JSON.stringify(institutions) %>;
+        const fuse = new Fuse(institutions, {
+            keys: ['name'],
+            threshold: 0.3
+        });
+
+        const institutionsInput = document.getElementById('institutionsInput');
+        const institutionsDropdown = document.getElementById('institutionsDropdown');
+
+        institutionsInput.addEventListener('input', () => {
+            const searchText = institutionsInput.value;
+            const results = fuse.search(searchText);
+
+            institutionsDropdown.innerHTML = '';
+            institutionsDropdown.style.display = results.length > 0 ? 'block' : 'none';
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.textContent = result.item.name;
+                div.dataset.id = result.item.id;
+                div.classList.add('dropdown-item');
+                div.addEventListener('click', () => {
+                    institutionsInput.value = result.item.name;
+                    institutionsDropdown.innerHTML = '';
+                    institutionsDropdown.style.display = 'none';
+                });
+                institutionsDropdown.appendChild(div);
+            });
+
+            if (results.length === 0) {
+                const div = document.createElement('div');
+                div.textContent = 'No results found';
+                div.classList.add('dropdown-item');
+                institutionsDropdown.appendChild(div);
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!institutionsInput.contains(event.target) && !institutionsDropdown.contains(event.target)) {
+                institutionsDropdown.innerHTML = '';
+                institutionsDropdown.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

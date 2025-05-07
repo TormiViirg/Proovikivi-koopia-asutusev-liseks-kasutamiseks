@@ -1,0 +1,341 @@
+body {
+    font-family: 'Inter', sans-serif;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+.navbar {
+    position: fixed;
+    top:0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    width: 95%;
+}
+
+.navbar img {
+    width: 250px;
+    height: auto;
+}
+
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar ul li {
+    display: inline;
+}
+
+.navbar ul li a {
+    color: black;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.navbar a:hover {
+    color: #000088;
+}
+
+@media (max-width: 768px) {
+    .navbar li {
+        margin-left: 10px; /* Adjust for smaller screens */
+    }
+}
+
+.main-content {
+    padding-top: 80px; /* Adjust according to the height of your navbar */
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+.top-section {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title-section {
+    width: 100%;
+    text-align: left;
+    padding: 40px 30px 20px;
+    box-sizing: border-box;
+}
+
+.title-section h1 {
+    font-size: 32px;
+    margin: 0;
+    color: #000088; /* Match with project-form.css */
+    font-weight: bold; /* Match with project-form.css */
+}
+
+.carousel-wrapper {
+    width: 60%;
+    position: relative;
+    margin: 0 auto;
+}
+
+.carousel-item {
+    text-align: center;
+    padding: 5px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.carousel-control {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: -30px;
+}
+
+.carousel-control.next {
+    right: -30px;
+}
+
+@media (max-width: 768px) {
+    .carousel-wrapper {
+        width: 100%;
+    }
+}
+
+
+.main-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.container {
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+.left-container {
+    width: 60%; /* Adjust as necessary */
+    max-width: 60%; /* Ensure it doesn't exceed 100% */
+}
+
+.right-container {
+    width: 40%; /* Adjust as necessary */
+    max-width: 40%; /* Ensure it doesn't exceed 100% */
+}
+
+/* Project Image styling */
+.project-image {
+    width: 100%; /* Adjust as necessary */
+    height: auto; /* Adjust as necessary */
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    font-weight: bold;
+    transition: 0.4s;
+    margin-bottom: 20px;
+}
+
+.accordion:after {
+    content: '\22C1';
+    font-size: 13px;
+    color: #777;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "\22C0";
+}
+
+.active, .accordion:hover {
+    background-color: #ccc;
+}
+
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.right-accordion {
+    background-color: transparent;
+    padding: 0;
+    margin: 15px 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    transition: 0.4s;
+}
+
+.right-accordion:after {
+    margin-left: 0;
+    float: none;
+    display: inline;
+}
+
+.right-accordion.active, .right-accordion:hover {
+    background-color: transparent;
+}
+
+.likeBtn {
+    width: 200px;
+    height: 70px;
+    flex-shrink: 0;
+    background-color: #008;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.likeBtn i {
+    font-size: 32px;
+}
+
+.likeBtn.liked i {
+    color: red;
+}
+
+.likeBtn.liked {
+    color: white;
+}
+
+/* Proovikivi styling */
+.proovikivi-image {
+    position: relative;
+    width: 200px;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.proovikivi-overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.proovikivi-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.3s ease-in-out;
+}
+
+.proovikivi-text {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    transition: bottom 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.proovikivi-text h3 {
+    margin: 0;
+    position: relative;
+    font-weight: bold; /* Match with project-form.css */
+}
+
+.proovikivi-text h3 {
+    font-size: 18px;
+    overflow: hidden;
+}
+
+.proovikivi-text h3::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.proovikivi-image:hover .proovikivi-img {
+    filter: brightness(50%);
+}
+
+.proovikivi-image:hover .proovikivi-text {
+    bottom: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.proovikivi-image:hover .proovikivi-text h3::after {
+    width: 100%;
+    left: 0;
+}
+
+/* Edit Button styling */
+.editBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #008;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    font-size: 24px;
+}
