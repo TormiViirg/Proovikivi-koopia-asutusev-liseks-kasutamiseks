@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/project-fullview.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <title>Project Fullview</title>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <img src="/img/proovikivi_logo.png" alt="proovikivi logo">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu" id="menu">
+            <ul>
+                <li><a href="/project-form">Loo projekt</a></li>
+                <li><a href="/projects">Projektid</a></li>
+                <li><a href="https://proovikivi.ee/portfoolio/">Proovikivid</a></li>
+                <li><a href="/profile">Minu profiil</a></li>
+                <li><a href="/logout">Logi välja</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="main-content">
+        <% if (project) { %>
+            <div class="top-section">
+                <div class="title-section">
+                    <h1><%= project.title %></h1>
+                </div>
+                <div class="carousel-wrapper">
+                    <div class="carousel">
+                        <% if (project.school_subject_names) { %>
+                            <% project.school_subject_names.split(',').forEach(subject => { %>
+                                <div class="carousel-item-box">
+                                    <p><%= subject.trim() %></p>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                        <% project.tags.forEach(tag => { %>
+                            <div class="carousel-item-box">
+                                <p><%= tag %></p>
+                            </div>
+                        <% }); %>
+                        <% if (project.global_goal_titles) { %>
+                            <% project.global_goal_titles.split(',').forEach(globalGoal => { %>
+                                <div class="carousel-item-box">
+                                    <p><%= globalGoal.trim() %></p>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
+                
+                
+            </div>
+            
+            <div class="main-section">
+                <div class="container left-container">
+                    <% if (project.image_base64) { %>
+                        <img class="project-image" src="data:image/jpeg;base64,<%= project.image_base64 %>" alt="<%= project.image_description %>">
+                    <% } %>
+                    <% if (project.contact) { %>
+                        <h3>Kontaktandmed liitumishuvilistele:</h3>
+                            <p>Ootame kõiki huvilisi. Osalemissoovist teada andmiseks võta ühendust: </p>
+                            <p><%= project.contact %></p>
+                    <% } %>
+                    <button class="accordion">Probleemi uurimine</button>
+                    <div class="panel">
+                        <p><%= project.problem_description %></p>
+                    </div>
+                    <button class="accordion">Lahendusidee</button>
+                    <div class="panel">
+                        <p><%= project.solution_idea %></p>
+                    </div>
+                    <button class="accordion">Projekti plaan ja elluviimine</button>
+                    <div class="panel">
+                        <p><%= project.project_plan %></p>
+                    </div>
+                    <button class="accordion">Tulemused ja järeldused</button>
+                    <div class="panel">
+                        <p><%= project.results_conclusions %></p>
+                    </div>
+                    <hr>
+                    <p>Projektiga seotud link: <a href="<%= project.web_link %>" target="_blank"><%= project.web_link %></a></p>
+                    <p>Projektiga seotud video: <a href="<%= project.youtube_link %>" target="_blank"><%= project.youtube_link %></a></p>
+                </div>
+                <div class="container right-container">
+                    <div class="like-container">
+                        <button class="likeBtn <%= project.liked ? 'liked' : '' %>" data-project-id="<%= project.id %>">
+                            <i class="fas fa-heart"></i> Lemmik
+                        </button>
+                    </div>
+                    <% if (project.proovikivi_image_base64) { %>
+                        <div class="proovikivi-image">
+                            <div class="proovikivi-overlay">
+                                <img class="proovikivi-img" src="data:image/jpeg;base64,<%= project.proovikivi_image_base64 %>" alt="<%= project.proovikivi_title %>">
+                                <div class="proovikivi-text">
+                                    <h3><%= project.proovikivi_title %></h3>
+                                    <p><%= project.proovikivi_goal %></p>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                    
+                    <h3>Korraldaja</h3>
+                    <p><%= project.creator_name %></p> 
+                    <h3>Toimumispaik</h3>
+                    <p><%= project.location_name %></p>
+                    <p><%= project.location_specify %></p>
+                    <h3>Projekti kestus</h3>
+                    <p><%= project.start_date %> - <%= project.end_date %></p>
+                    <h3>Juhendaja</h3>
+                    <p><%= project.supervisor %></p>
+                    <button class="accordion right-accordion">Meeskond</button>
+                    <div class="panel">
+                        <p><%= project.team_member %></p>
+                    </div>
+                    <button class="accordion right-accordion">Projektiga seotud asutus</button>
+                    <div class="panel">
+                        <p><%= project.related_institution %></p>
+                    </div>
+                </div>
+            </div>
+            <% if (userId === project.user_id) { %>
+                <!-- <a class='edit-button' href="/project-update/<%= project.id %>">
+                    <img class="edit-button-img" src='img/taienda.png'>
+                </a> -->
+
+                <a class="edit-button" href="/project-update/<%= project.id %>">
+                    <img class="edit-button-img" src="/img/taienda.png">
+                </a>
+
+                <% } %>
+        <% } else { %>
+            <p>Project not found.</p>
+        <% } %>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/script/fullproject-functions.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        });
+    </script>
+
+</body>
+</html>

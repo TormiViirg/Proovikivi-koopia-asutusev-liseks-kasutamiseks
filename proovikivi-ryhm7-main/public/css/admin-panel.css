@@ -1,0 +1,167 @@
+:root {
+    --base-font-size: 10px; /* Define a CSS variable for the base font size */
+    --primary-color: #000088;
+    --text-color: #555;
+    --label-color: #000;
+    --input-border-color: #7d7d7d;
+    --button-bg: #007BFF;
+    --button-bg-hover: #0056b3;
+    --button-radius: 0.4em;
+    --fieldset-border: #ccc;
+}
+
+html {
+    font-size: var(--base-font-size); /* Use the CSS variable */
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+
+}
+
+.container {
+    width: 100%;
+    max-width: 80em;
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    margin: auto;
+}
+
+h1 {
+    margin-top: 3.5em;
+    margin-bottom: 0.5em;
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 3.5em;
+    text-align: left;
+    width: 100%;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1.5em;
+    color: var(--text-color);
+    font-size: 2.25em;
+    font-weight: 600;
+    text-align: left;
+    width: 100%;
+    padding-left: 1%;
+}
+
+fieldset {
+    margin-bottom: 1.5em;
+    padding: 1.5em;
+    border: 0.1em solid var(--fieldset-border);
+    border-radius: 0.4em;
+}
+
+legend {
+    font-weight: bold;
+    font-size: 2.25em;
+    color: #000;
+}
+
+/* Labels */
+label {
+    display: block;
+    width: 100%;
+    font-size: 2.25em;
+    font-weight: 600;
+    color: var(--label-color);
+    margin-bottom: 0.5em;
+    text-align: left;
+    padding-left: 2%;
+}
+
+
+input,
+select,
+textarea {
+    width: 100%;
+    font-size: 2em;
+    border-radius: 0.65em;
+    border: 0.1em solid var(--input-border-color);
+    outline: none;
+    box-sizing: border-box;
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+    padding: 0.5em;
+    font-family: 'Inter', sans-serif;
+    color: var(--input-border-color);
+}
+
+/* Textarea specifics */
+textarea {
+    height: 10em;
+    resize: vertical;
+    font-weight: 500;
+}
+
+/* Input placeholder centering */
+input::placeholder,
+select::placeholder {
+    text-align: center;
+}
+
+/* Input focus */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+}
+
+/* Buttons */
+button {
+    padding: 1vh;
+    font-size: 2.3125em;
+    background-color: #000088;
+    color: #fff;
+    border: none;
+    border-radius: var(--button-radius);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+/* Utility classes for form layout */
+.dataContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.dateContainer {
+    display: flex;
+    justify-content: center;
+    gap: 5%;
+    width: 100%;
+}
+
+.dateInputContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2em;
+}
+
+.char-counter {
+    width: 100%;
+    text-align: right;
+    font-size: 2em;
+    color: var(--input-border-color);
+    font-weight: 400;
+    margin-bottom: 1em;
+}

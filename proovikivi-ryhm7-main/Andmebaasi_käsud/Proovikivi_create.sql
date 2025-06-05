@@ -1,215 +1,200 @@
+-- ============================================
 -- Created by Vertabelo (http://vertabelo.com)
 -- Last modification date: 2024-06-18 07:19:17.557
+-- ============================================
 
--- tables
--- Table: favourite_project
-CREATE TABLE favourite_project (
-    id int  NOT NULL AUTO_INCREMENT,
-    user_id int  NOT NULL,
-    project_id int  NOT NULL,
-    CONSTRAINT favourite_project_pk PRIMARY KEY (id)
-);
+-- (1) “Lookup” tables / “base” tables with no incoming FKs first:
 
 -- Table: gender
 CREATE TABLE gender (
-    id int  NOT NULL,
-    name varchar(255)  NOT NULL,
-    CONSTRAINT gender_pk PRIMARY KEY (id)
-);
-
--- Table: global_goal
-CREATE TABLE global_goal (
-    id int  NOT NULL AUTO_INCREMENT,
-    image blob  NOT NULL,
-    title varchar(255)  NOT NULL,
-    CONSTRAINT global_goal_pk PRIMARY KEY (id)
-);
-
--- Table: institution
-CREATE TABLE institution (
-    id int  NOT NULL AUTO_INCREMENT,
-    name varchar(255)  NOT NULL,
-    CONSTRAINT institution_pk PRIMARY KEY (id)
-);
-
--- Table: location
-CREATE TABLE location (
-    id int  NOT NULL AUTO_INCREMENT,
-    name varchar(255)  NOT NULL,
-    CONSTRAINT location_pk PRIMARY KEY (id)
-);
-
--- Table: project
-CREATE TABLE project (
-    id int  NOT NULL AUTO_INCREMENT,
-    user_id int  NOT NULL,
-    title varchar(255)  NOT NULL,
-    proovikivi_id int  NOT NULL,
-    supervisor varchar(255)  NOT NULL,
-    image mediumblob  NULL,
-    image_description varchar(255)  NULL,
-    start_date date  NULL,
-    end_date date  NULL,
-    location_id int  NULL,
-    location_specify varchar(255)  NULL,
-    team_member varchar(255)  NULL,
-    institution_id int  NULL,
-    tag varchar(255)  NULL,
-    problem_description varchar(500)  NULL,
-    solution_idea varchar(500)  NULL,
-    project_plan varchar(500)  NULL,
-    results_conclusion varchar(500)  NULL,
-    web_link varchar(255)  NULL,
-    youtube_link varchar(255)  NULL,
-    published bool  NOT NULL,
-    flagged bool  NOT NULL,
-    favourite_count int  NULL,
-    created_date timestamp  NOT NULL,
-    CONSTRAINT project_pk PRIMARY KEY (id)
-);
-
--- Table: project_global_goal
-CREATE TABLE project_global_goal (
-    project_id INT NOT NULL,
-    global_goal_id INT NOT NULL,
-    PRIMARY KEY (project_id, global_goal_id),
-    FOREIGN KEY (project_id) REFERENCES project(id),
-    FOREIGN KEY (global_goal_id) REFERENCES global_goal(id)
-);
-
--- Table: project_school_subject
-CREATE TABLE project_school_subject (
-    project_id INT NOT NULL,
-    school_subject_id INT NOT NULL,
-    PRIMARY KEY (project_id, school_subject_id),
-    FOREIGN KEY (project_id) REFERENCES project(id),
-    FOREIGN KEY (school_subject_id) REFERENCES school_subject(id)
-);
-
--- Table: project_team_member
-CREATE TABLE project_team_member (
-    id int  NOT NULL,
-    user_id int  NOT NULL,
-    project_id int  NOT NULL,
-    CONSTRAINT project_team_member_pk PRIMARY KEY (id)
-);
-
--- Table: proovikivi
-CREATE TABLE proovikivi (
-    id int  NOT NULL AUTO_INCREMENT,
-    title varchar(255)  NOT NULL,
-    image blob  NOT NULL,
-    goal varchar(250)  NULL,
-    CONSTRAINT proovikivi_pk PRIMARY KEY (id)
-);
-
--- Table: school_subject
-CREATE TABLE school_subject (
-    id int  NOT NULL AUTO_INCREMENT,
-    name varchar(255)  NOT NULL,
-    CONSTRAINT school_subject_pk PRIMARY KEY (id)
-);
-
--- Table: supervisor
-CREATE TABLE supervisor (
-    id int  NOT NULL AUTO_INCREMENT,
-    user_id int  NOT NULL,
-    project_id int  NOT NULL,
-    CONSTRAINT supervisor_pk PRIMARY KEY (id)
-);
-
--- Table: user
-CREATE TABLE user (
-    id int  NOT NULL AUTO_INCREMENT,
-    username varchar(50)  NOT NULL,
-    email varchar(255)  NOT NULL,
-    gender_id int  NOT NULL,
-    birthdate date  NOT NULL,
-    user_type_id int  NOT NULL,
-    institution_id int  NULL,
-    password varchar(255)  NOT NULL,
-    profile_picture blob  NULL,
-    login_count int  NOT NULL,
-    reset_token varchar(6)  NULL,
-    token_expire datetime  NULL,
-    CONSTRAINT ID PRIMARY KEY (id)
+    id INT       NOT NULL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
 );
 
 -- Table: user_type
 CREATE TABLE user_type (
-    id int  NOT NULL AUTO_INCREMENT,
-    name varchar(255)  NOT NULL,
-    CONSTRAINT user_type_pk PRIMARY KEY (id)
+    id INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)  NOT NULL
 );
 
--- foreign keys
--- Reference: favourite_project_project (table: favourite_project)
-ALTER TABLE favourite_project ADD CONSTRAINT favourite_project_project FOREIGN KEY favourite_project_project (project_id)
-    REFERENCES project (id);
+-- Table: institution
+CREATE TABLE institution (
+    id INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)  NOT NULL
+);
 
--- Reference: favourite_project_user (table: favourite_project)
-ALTER TABLE favourite_project ADD CONSTRAINT favourite_project_user FOREIGN KEY favourite_project_user (user_id)
-    REFERENCES user (id);
+-- Table: location
+CREATE TABLE location (
+    id INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)  NOT NULL
+);
 
--- Reference: project_global_goal_global_goal (table: project_global_goal)
-ALTER TABLE project_global_goal ADD CONSTRAINT project_global_goal_global_goal FOREIGN KEY project_global_goal_global_goal (global_goal_id)
-    REFERENCES global_goal (id);
+-- Table: school_subject
+CREATE TABLE school_subject (
+    id INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)  NOT NULL
+);
 
--- Reference: project_global_goal_project (table: project_global_goal)
-ALTER TABLE project_global_goal ADD CONSTRAINT project_global_goal_project FOREIGN KEY project_global_goal_project (project_id)
-    REFERENCES project (id);
+-- Table: global_goal
+CREATE TABLE global_goal (
+    id INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    image BLOB         NOT NULL,
+    title VARCHAR(255) NOT NULL
+);
 
--- Reference: project_institution (table: project)
-ALTER TABLE project ADD CONSTRAINT project_institution FOREIGN KEY project_institution (institution_id)
-    REFERENCES institution (id);
+-- Table: proovikivi
+CREATE TABLE proovikivi (
+    id   INT            NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255)  NOT NULL,
+    image BLOB          NOT NULL,
+    goal VARCHAR(250)   NULL
+);
 
--- Reference: project_location (table: project)
-ALTER TABLE project ADD CONSTRAINT project_location FOREIGN KEY project_location (location_id)
-    REFERENCES location (id);
+-- ============================================
+-- (2) “User” table (it references gender, user_type, institution)
+CREATE TABLE `user` (
+    id               INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username         VARCHAR(50)     NOT NULL,
+    email            VARCHAR(255)    NOT NULL,
+    gender_id        INT             NOT NULL,
+    birthdate        DATE            NOT NULL,
+    user_type_id     INT             NOT NULL,
+    institution_id   INT             NULL,
+    password         VARCHAR(255)    NOT NULL,
+    profile_picture  BLOB            NULL,
+    login_count      INT             NOT NULL,
+    reset_token      VARCHAR(6)      NULL,
+    token_expire     DATETIME        NULL,
+    CONSTRAINT uq_user_email UNIQUE (email)
+);
 
--- Reference: project_proovikivi (table: project)
-ALTER TABLE project ADD CONSTRAINT project_proovikivi FOREIGN KEY project_proovikivi (proovikivi_id)
-    REFERENCES proovikivi (id);
+-- ============================================
+-- (3) “Project” table (it references user, proovikivi, location, institution)
+CREATE TABLE project (
+    id                   INT            NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id              INT            NOT NULL,
+    title                VARCHAR(255)   NOT NULL,
+    proovikivi_id        INT            NOT NULL,
+    supervisor           VARCHAR(255)   NOT NULL,
+    image                MEDIUMBLOB     NULL,
+    image_description    VARCHAR(255)   NULL,
+    start_date           DATE           NULL,
+    end_date             DATE           NULL,
+    location_id          INT            NULL,
+    location_specify     VARCHAR(255)   NULL,
+    team_member          VARCHAR(255)   NULL,
+    institution_id       INT            NULL,
+    tag                  VARCHAR(255)   NULL,
+    problem_description  VARCHAR(500)   NULL,
+    solution_idea        VARCHAR(500)   NULL,
+    project_plan         VARCHAR(500)   NULL,
+    results_conclusion   VARCHAR(500)   NULL,
+    web_link             VARCHAR(255)   NULL,
+    youtube_link         VARCHAR(255)   NULL,
+    published            BOOL           NOT NULL,
+    flagged_count        INT            NULL,
+    favourite_count      INT            NULL,
+    created_date         TIMESTAMP      NOT NULL
+);
 
--- Reference: project_school_subject_project (table: project_school_subject)
-ALTER TABLE project_school_subject ADD CONSTRAINT project_school_subject_project FOREIGN KEY project_school_subject_project (project_id)
-    REFERENCES project (id);
+-- ============================================
+-- (4) “Join” / Many‐to‐Many / Dependent tables
 
--- Reference: project_school_subject_school_subject (table: project_school_subject)
-ALTER TABLE project_school_subject ADD CONSTRAINT project_school_subject_school_subject FOREIGN KEY project_school_subject_school_subject (school_subject_id)
-    REFERENCES school_subject (id);
+-- Table: favourite_project (references project, user)
+CREATE TABLE favourite_project (
+    id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id    INT NOT NULL,
+    project_id INT NOT NULL
+);
 
--- Reference: project_team_member_project (table: project_team_member)
-ALTER TABLE project_team_member ADD CONSTRAINT project_team_member_project FOREIGN KEY project_team_member_project (project_id)
-    REFERENCES project (id);
+-- Table: project_global_goal (references project, global_goal)
+CREATE TABLE project_global_goal (
+    project_id     INT NOT NULL,
+    global_goal_id INT NOT NULL,
+    PRIMARY KEY (project_id, global_goal_id)
+);
 
--- Reference: project_team_member_user (table: project_team_member)
-ALTER TABLE project_team_member ADD CONSTRAINT project_team_member_user FOREIGN KEY project_team_member_user (user_id)
-    REFERENCES user (id);
+-- Table: project_school_subject (references project, school_subject)
+CREATE TABLE project_school_subject (
+    project_id        INT NOT NULL,
+    school_subject_id INT NOT NULL,
+    PRIMARY KEY (project_id, school_subject_id)
+);
 
--- Reference: project_user (table: project)
-ALTER TABLE project ADD CONSTRAINT project_user FOREIGN KEY project_user (user_id)
-    REFERENCES user (id);
+-- Table: project_team_member (references user, project)
+CREATE TABLE project_team_member (
+    id         INT NOT NULL,
+    user_id    INT NOT NULL,
+    project_id INT NOT NULL,
+    CONSTRAINT project_team_member_pk PRIMARY KEY (id)
+);
 
--- Reference: supervisor_project (table: supervisor)
-ALTER TABLE supervisor ADD CONSTRAINT supervisor_project FOREIGN KEY supervisor_project (project_id)
-    REFERENCES project (id);
+-- Table: supervisor (references user, project)
+CREATE TABLE supervisor (
+    id         INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id    INT NOT NULL,
+    project_id INT NOT NULL
+);
 
--- Reference: supervisor_user (table: supervisor)
-ALTER TABLE supervisor ADD CONSTRAINT supervisor_user FOREIGN KEY supervisor_user (user_id)
-    REFERENCES user (id);
+-- ============================================
+-- (5) Add all FOREIGN KEY constraints now that every referenced table exists
 
--- Reference: user_gender (table: user)
-ALTER TABLE user ADD CONSTRAINT user_gender FOREIGN KEY user_gender (gender_id)
-    REFERENCES gender (id);
+-- favourite_project → project(id), → user(id)
+ALTER TABLE favourite_project
+  ADD CONSTRAINT favourite_project_project
+    FOREIGN KEY (project_id) REFERENCES project (id),
+  ADD CONSTRAINT favourite_project_user
+    FOREIGN KEY (user_id)    REFERENCES `user`  (id);
 
--- Reference: user_institution (table: user)
-ALTER TABLE user ADD CONSTRAINT user_institution FOREIGN KEY user_institution (institution_id)
-    REFERENCES institution (id);
+-- project_global_goal → project(id), → global_goal(id)
+ALTER TABLE project_global_goal
+  ADD CONSTRAINT project_global_goal_project
+    FOREIGN KEY (project_id)     REFERENCES project     (id),
+  ADD CONSTRAINT project_global_goal_global_goal
+    FOREIGN KEY (global_goal_id) REFERENCES global_goal (id);
 
--- Reference: user_user_type (table: user)
-ALTER TABLE user ADD CONSTRAINT user_user_type FOREIGN KEY user_user_type (user_type_id)
-    REFERENCES user_type (id);
+-- project_school_subject → project(id), → school_subject(id)
+ALTER TABLE project_school_subject
+  ADD CONSTRAINT project_school_subject_project
+    FOREIGN KEY (project_id)        REFERENCES project        (id),
+  ADD CONSTRAINT project_school_subject_school_subject
+    FOREIGN KEY (school_subject_id) REFERENCES school_subject (id);
 
--- End of file.
+-- project_team_member → project(id), → user(id)
+ALTER TABLE project_team_member
+  ADD CONSTRAINT project_team_member_project
+    FOREIGN KEY (project_id) REFERENCES project (id),
+  ADD CONSTRAINT project_team_member_user
+    FOREIGN KEY (user_id)    REFERENCES `user` (id);
 
+-- supervisor → project(id), → user(id)
+ALTER TABLE supervisor
+  ADD CONSTRAINT supervisor_project
+    FOREIGN KEY (project_id) REFERENCES project (id),
+  ADD CONSTRAINT supervisor_user
+    FOREIGN KEY (user_id)    REFERENCES `user`    (id);
+
+-- project → user(id), → proovikivi(id), → location(id), → institution(id)
+ALTER TABLE project
+  ADD CONSTRAINT project_user
+    FOREIGN KEY (user_id)       REFERENCES `user`   (id),
+  ADD CONSTRAINT project_proovikivi
+    FOREIGN KEY (proovikivi_id) REFERENCES proovikivi (id),
+  ADD CONSTRAINT project_location
+    FOREIGN KEY (location_id)   REFERENCES location  (id),
+  ADD CONSTRAINT project_institution
+    FOREIGN KEY (institution_id) REFERENCES institution (id);
+
+-- user → gender(id), → user_type(id), → institution(id)
+ALTER TABLE `user`
+  ADD CONSTRAINT user_gender
+    FOREIGN KEY (gender_id)      REFERENCES gender      (id),
+  ADD CONSTRAINT user_user_type
+    FOREIGN KEY (user_type_id)   REFERENCES user_type   (id),
+  ADD CONSTRAINT user_institution
+    FOREIGN KEY (institution_id) REFERENCES institution (id);
+
+ALTER TABLE `user`
+  MODIFY COLUMN login_count INT NOT NULL DEFAULT 0;
+
+-- No other FKs remain. End of schema.

@@ -28,6 +28,9 @@ const projectFormRouter = require('./routes/project-form');
 const logoutRouter = require('./routes/logout');
 const projectUpdateRouter = require('./routes/project-update');
 
+const adminProjectsRouter = require('./routes/admin-projects')
+const adminProjectFullViewRouter = require('./routes/admin-project-fullview');
+const adminPanelRouter = require('./routes/admin-panel')
 
 app.use('/login', loginRouter);
 app.use('/signup', signupRouter);
@@ -38,6 +41,10 @@ app.use('/project', projectFullViewRouter);
 app.use('/profile', userProfileRouter);
 app.use(logoutRouter);
 app.use('/project-update', projectUpdateRouter);
+
+app.use('/admin/projects', adminProjectsRouter);
+app.use('/admin/project', adminProjectFullViewRouter);
+app.use('/admin/panel', adminPanelRouter);
 
 app.get('/', (req, res) => {
     res.redirect('/login');
