@@ -1,8 +1,10 @@
-const express = require('express');
-const pool = require('../src/databasepool').pool;
-const router = express.Router();
-const path = require('path');
+// routes/admin-panel.js
 
+const express = require('express');
+const { pool } = require('../src/databasepool'); // <-- ensure this actually exports { pool }
+const router = express.Router();
+
+// Utility: split a textarea string into trimmed, non‐empty lines
 function parseLines(text) {
   if (!text) return [];
   return text
@@ -11,18 +13,45 @@ function parseLines(text) {
     .filter(line => line.length > 0);
 }
 
-router.get('/', (req, res) => {
-  // If your view file is named "admin-panel.ejs" under views/,
-  // this will render that template.
-  res.render('admin-panel');
+// ─── GET /admin-panel ────────────────────────────────────────────────────────────
+// Fetch all six lookup tables via pool.query(), then render admin-panel.ejs
+router.get('/', async (req, res, next) => {
+  try {
+    // 1) gender(name)
+    const [genders] = await pool.query('SELECT name FROM gender ORDER BY id');
+
+    // 2) user_type(name)
+    const [userTypes] = await pool.query('SELECT name FROM user_type ORDER BY id');
+
+    // 3) school_subject(name)
+    const [schoolSubjects] = await pool.query('SELECT name FROM school_subject ORDER BY id');
+
+    // 4) global_goal(title)
+    const [globalGoals] = await pool.query('SELECT title FROM global_goal ORDER BY id');
+
+    // 5) proovikivi(title)
+    const [proovikivid] = await pool.query('SELECT title FROM proovikivi ORDER BY id');
+
+    // 6) location(name)
+    const [locations] = await pool.query('SELECT name FROM location ORDER BY id');
+
+    // Now render the template, passing all six arrays
+    return res.render('admin-panel', {
+      genders,         // [ { name: 'Mees' }, { name: 'Naine' }, … ]
+      userTypes,       // [ { name: 'Õpilane' }, … ]
+      schoolSubjects,  // [ { name: 'Eesti keel' }, … ]
+      globalGoals,     // [ { title: 'Kaotada vaesus' }, … ]
+      proovikivid,     // [ { title: 'Energia julgeolek…' }, … ]
+      locations        // [ { name: 'Tallinn' }, … ]
+    });
+  } catch (err) {
+    return next(err);
+  }
 });
 
-// POST /admin/panel
-// This route processes the "Populate Lookup Tables" form. It reads each textarea field,
-// splits its contents into non-empty lines, and inserts each line into the corresponding lookup table.
-// If a row with the same name/title already exists, it will be skipped.
-router.post('/', async (req, res) => {
-  // Extract raw textarea values from the request body
+// ─── POST /admin-panel ────────────────────────────────────────────────────────────
+// Parse each textarea, skip duplicates, insert any new lines into the six tables
+router.post('/', async (req, res, next) => {
   const {
     genders: rawGenders,
     userTypes: rawUserTypes,
@@ -32,23 +61,20 @@ router.post('/', async (req, res) => {
     locations: rawLocations
   } = req.body;
 
-  // Parse each textarea into an array of non-empty, trimmed lines
-  const genders = parseLines(rawGenders);
-  const userTypes = parseLines(rawUserTypes);
+  const genders        = parseLines(rawGenders);
+  const userTypes      = parseLines(rawUserTypes);
   const schoolSubjects = parseLines(rawSchoolSubjects);
-  const globalGoals = parseLines(rawGlobalGoals);
-  const proovikivid = parseLines(rawProovikivid);
-  const locations = parseLines(rawLocations);
+  const globalGoals    = parseLines(rawGlobalGoals);
+  const proovikivid    = parseLines(rawProovikivid);
+  const locations      = parseLines(rawLocations);
 
   let connection;
   try {
-    // Acquire a connection from the pool
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    // 1) Insert into `gender` table
+    // 1) Insert into `gender` if not exists
     for (const name of genders) {
-      // Check if this gender already exists
       const [rows] = await connection.query(
         'SELECT id FROM gender WHERE name = ?',
         [name]
@@ -59,12 +85,10 @@ router.post('/', async (req, res) => {
           [name]
         );
       }
-      // If it exists, skip insertion
     }
 
-    // 2) Insert into `user_type` table
+    // 2) Insert into `user_type`
     for (const name of userTypes) {
-      // Check if this user type already exists
       const [rows] = await connection.query(
         'SELECT id FROM user_type WHERE name = ?',
         [name]
@@ -77,9 +101,8 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // 3) Insert into `school_subject` table
+    // 3) Insert into `school_subject`
     for (const name of schoolSubjects) {
-      // Check if this subject already exists
       const [rows] = await connection.query(
         'SELECT id FROM school_subject WHERE name = ?',
         [name]
@@ -92,10 +115,8 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // 4) Insert into `global_goal` table
-    // Note: `image` is a NOT NULL BLOB, so we insert an empty Buffer for the image column.
+    // 4) Insert into `global_goal` (image is BLOB NOT NULL → empty buffer)
     for (const title of globalGoals) {
-      // Check if this global goal title already exists
       const [rows] = await connection.query(
         'SELECT id FROM global_goal WHERE title = ?',
         [title]
@@ -108,10 +129,8 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // 5) Insert into `proovikivi` table
-    // Note: columns are (title, image, goal); we insert an empty Buffer for image and NULL for goal.
+    // 5) Insert into `proovikivi` (title, image, goal=NULL)
     for (const title of proovikivid) {
-      // Check if this project idea already exists
       const [rows] = await connection.query(
         'SELECT id FROM proovikivi WHERE title = ?',
         [title]
@@ -124,9 +143,8 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // 6) Insert into `location` table
+    // 6) Insert into `location`
     for (const name of locations) {
-      // Check if this location already exists
       const [rows] = await connection.query(
         'SELECT id FROM location WHERE name = ?',
         [name]
@@ -139,22 +157,17 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Commit all inserts
     await connection.commit();
-    // Send a simple success response
-    res.send('Lookup tables updated successfully.');
+    connection.release();
+
+    return res.redirect('/admin-panel');
   } catch (error) {
-    // Roll back if anything went wrong
     if (connection) {
       await connection.rollback();
-    }
-    console.error('Error updating lookup tables:', error);
-    res.status(500).send('An error occurred while updating lookup tables.');
-  } finally {
-    // Release the connection back to the pool
-    if (connection) {
       connection.release();
     }
+    console.error('Error updating lookup tables:', error);
+    return res.status(500).send('An error occurred while updating lookup tables.');
   }
 });
 
