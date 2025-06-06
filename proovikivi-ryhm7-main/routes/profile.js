@@ -2,108 +2,120 @@ const express = require('express');
 const pool = require('../src/databasepool').pool;
 const router = express.Router();
 const multer = require('multer');
+const { Buffer } = require('buffer');
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 function isAuthenticated(req, res, next) {
-    if (req.session.userId) {
-        next();  
-    } else {
-        res.redirect('/login'); 
-    }
+  if (req.session.userId) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
 }
 
 router.get('/', isAuthenticated, async (req, res) => {
-    const userId = req.session.userId;
+  const userId = req.session.userId;
 
-    pool.execute('SELECT username, email, gender_id, birthdate, user_type_id, institution_id, profile_picture FROM user WHERE id = ?', [userId], (err, results) => {
-        if (err) {
-            console.error('Error fetching user data:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
+  try {
 
-        if (results.length === 0) {
-            console.error('Error: No user found with id:', userId);
-            res.status(404).send('User Not Found');
-            return;
-        }
+    const [userRows] = await pool.execute(
+      'SELECT username, email, gender_id, birthdate, user_type_id, institution_id, profile_picture FROM user WHERE id = ?',
+      [userId]
+    );
 
-        const user = results[0];
+    if (userRows.length === 0) {
+      console.error('Error: No user found with id:', userId);
+      return res.status(404).send('User Not Found');
+    }
 
-        if (user.profile_picture) {
-            user.profile_picture = `data:image/jpeg;base64,${Buffer.from(user.profile_picture).toString('base64')}`;
-        }
+    const user = { ...userRows[0] };
 
-        // Ensure birthdate is treated as a UTC date and only the date part is sent
-        user.birthdate = new Date(user.birthdate).toISOString().split('T')[0];
+    if (user.profile_picture) {
+      user.profile_picture = `data:image/jpeg;base64,${Buffer.from(
+        user.profile_picture
+      ).toString('base64')}`;
+    }
 
-        pool.execute('SELECT id, name FROM gender', (err, genders) => {
-            if (err) {
-                console.error('Error fetching genders:', err);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
+    user.birthdate = new Date(user.birthdate)
+      .toISOString()
+      .split('T')[0];
 
-            pool.execute('SELECT id, name FROM user_type', (err, userTypes) => {
-                if (err) {
-                    console.error('Error fetching user types:', err);
-                    res.status(500).send('Internal Server Error');
-                    return;
-                }
+    const [
+      [genders],
+      [userTypes],
+      [institutions],
+    ] = await Promise.all([
+      pool.execute('SELECT id, name FROM gender'),
+      pool.execute('SELECT id, name FROM user_type'),
+      pool.execute('SELECT id, name FROM institution'),
+    ]);
 
-                pool.execute('SELECT id, name FROM institution', (err, institutions) => {
-                    if (err) {
-                        console.error('Error fetching institutions:', err);
-                        res.status(500).send('Internal Server Error');
-                        return;
-                    }
-
-                    res.render('profile', { user, genders, userTypes, institutions });
-                });
-            });
-        });
-    });
+    res.render('profile', { user, genders, userTypes, institutions });
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-router.post('/', upload.single('newProfilePicture'), isAuthenticated, async (req, res) => {
-    const { username, email, gender, birthdate, userType, institutionId, croppedImage } = req.body;
+router.post(
+  '/',
+  upload.single('newProfilePicture'),
+  isAuthenticated,
+  async (req, res) => {
+    const {
+      username,
+      email,
+      gender,
+      birthdate,
+      userType,
+      institutionId,
+      croppedImage,
+    } = req.body;
     const userId = req.session.userId;
 
     if (!userId || !username || !email || !gender || !birthdate || !userType) {
-        console.error('Error: Missing required parameters');
-        res.status(400).send('Bad Request');
-        return;
+      console.error('Error: Missing required parameters');
+      return res.status(400).send('Bad Request');
     }
 
-    // Prepare birthdate and update query
-    const birthdateObj = new Date(birthdate);
-    birthdateObj.setDate(birthdateObj.getDate() + 1);
-    const formattedBirthdate = birthdateObj.toISOString().split('T')[0];
+    try {
 
-    let updateQuery = 'UPDATE user SET username = ?, email = ?, gender_id = ?, birthdate = ?, user_type_id = ?, institution_id = ?';
-    const updateValues = [username, email, gender, formattedBirthdate, userType, institutionId || null];
+      const birthdateObj = new Date(birthdate);
+      birthdateObj.setDate(birthdateObj.getDate() + 1);
+      const formattedBirthdate = birthdateObj
+        .toISOString()
+        .split('T')[0];
 
-    // Check if there's a new profile picture
-    if (croppedImage) {
-        const profilePictureBuffer = Buffer.from(croppedImage.split(',')[1], 'base64');
+      let updateQuery =
+        'UPDATE user SET username = ?, email = ?, gender_id = ?, birthdate = ?, user_type_id = ?, institution_id = ?';
+      const updateValues = [
+        username,
+        email,
+        gender,
+        formattedBirthdate,
+        userType,
+        institutionId || null,
+      ];
+
+      if (croppedImage) {
+        const buffer = Buffer.from(croppedImage.split(',')[1], 'base64');
         updateQuery += ', profile_picture = ?';
-        updateValues.push(profilePictureBuffer);
+        updateValues.push(buffer);
+      }
+
+      updateQuery += ' WHERE id = ?';
+      updateValues.push(userId);
+
+      await pool.execute(updateQuery, updateValues);
+
+      res.redirect('/profile');
+    } catch (err) {
+      console.error('Error updating user data:', err);
+      res.status(500).send('Internal Server Error');
     }
-
-    updateQuery += ' WHERE id = ?';
-    updateValues.push(userId);
-
-    pool.execute(updateQuery, updateValues, (err, results) => {
-        if (err) {
-            console.error('Error updating user data:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        res.redirect('/profile');
-    });
-});
+  }
+);
 
 module.exports = router;

@@ -46,6 +46,10 @@ h1 {
     width: 100%;
 }
 
+h3 {
+    font-size: 2.5em;
+}
+
 p {
     margin-top: 0;
     margin-bottom: 1.5em;
@@ -121,12 +125,13 @@ textarea:focus {
 
 /* Buttons */
 button {
-    padding: 1vh;
+    height: 5.5vh;
+    width: 59vh;
     font-size: 2.3125em;
     background-color: #000088;
     color: #fff;
     border: none;
-    border-radius: var(--button-radius);
+    border-radius: 0.9em;
     cursor: pointer;
     font-weight: 600;
 }

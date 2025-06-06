@@ -2,131 +2,220 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../src/databasepool').pool;
 const multer = require('multer');
-const Buffer = require('buffer').Buffer;
+const { Buffer } = require('buffer');
 
 const storage = multer.memoryStorage();
 const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 4 * 1024 * 1024, 
-        fieldSize: 2 * 1024 * 1024,
-    }
+  storage,
+  limits: {
+    fileSize: 4 * 1024 * 1024,  
+    fieldSize: 2 * 1024 * 1024,
+  },
 });
 
 function isAuthenticated(req, res, next) {
-    if (req.session.userId) {
-        next();
-    } else {
-        res.redirect('/login');
-    }
+  if (req.session.userId) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) {
+    return '';
+  }
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
 }
 
 router.get('/', isAuthenticated, async (req, res) => {
-    try {
-        const [locations] = await pool.promise().query('SELECT id, name FROM location');
-        const [globalGoals] = await pool.promise().query('SELECT id, title FROM global_goal');
-        const [institutions] = await pool.promise().query('SELECT id, name FROM institution');
-        const [schoolSubjects] = await pool.promise().query('SELECT id, name FROM school_subject');
-        const [proovikivi] = await pool.promise().query('SELECT id, title FROM proovikivi');
+  try {
+    const [
+      [locations],
+      [globalGoals],
+      [institutions],
+      [schoolSubjects],
+      [proovikivi],
+    ] = await Promise.all([
+      pool.execute('SELECT id, name FROM location'),
+      pool.execute('SELECT id, title FROM global_goal'),
+      pool.execute('SELECT id, name FROM institution'),
+      pool.execute('SELECT id, name FROM school_subject'),
+      pool.execute('SELECT id, title FROM proovikivi'),
+    ]);
 
-        res.render('project-form', {
-            locations,
-            globalGoals,
-            institutions,
-            schoolSubjects,
-            proovikivi
-        });
-    } catch (err) {
-        console.error('Error fetching data:', err);
-        res.status(500).send('Internal Server Error');
-    }
+    res.render('project-form', {
+      locations,
+      globalGoals,
+      institutions,
+      schoolSubjects,
+      proovikivi,
+    });
+  } catch (err) {
+    console.error('Error fetching data:', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-router.post('/', upload.single('photoInput'), isAuthenticated, async (req, res) => {
+router.post(
+  '/',
+  upload.single('photoInput'),
+  isAuthenticated,
+  async (req, res) => {
     const {
-        projectnameInput, proovikiviInput, supervisorInput, image_description,
-        start_date, end_date, location_specify, team_member,
-        tag, problem_description, solution_idea, project_plan, results_conclusion,
-        contact, web_link, youtube_link, croppedImage
+      projectnameInput,
+      proovikiviInput,
+      supervisorInput,
+      image_description,
+      start_date,
+      end_date,
+      location_specify,
+      team_member,
+      tag,
+      problem_description,
+      solution_idea,
+      project_plan,
+      results_conclusion,
+      contact,
+      web_link,
+      youtube_link,
+      croppedImage,
     } = req.body;
 
-    const global_goal_ids = req.body.global_goal_id; // global goal ids array
-    const school_subject_ids = req.body.school_subject_id; // school subject IDs array 
+    const global_goal_ids = req.body.global_goal_id;       // may be array or single
+    const school_subject_ids = req.body.school_subject_id;  // may be array or single
     const userId = req.session.userId;
 
     let { institutionsInput, location_id } = req.body;
     institutionsInput = institutionsInput || null;
     location_id = location_id || null;
 
-    // Validate the size of the uploaded image file
-    if (req.file && req.file.size > 4 * 1024 * 1024) { // 5MB limit for image
-        return res.status(400).send('Image size exceeds the limit of 5MB');
+    if (req.file && req.file.size > 4 * 1024 * 1024) {
+      return res
+        .status(400)
+        .send('Image size exceeds the limit of 4 MiB');
     }
 
-    // Decode base64 image if available and validate its size
     let imageBuffer = null;
     if (croppedImage) {
-        const base64Str = croppedImage.split(",")[1];
-        const buffer = Buffer.from(base64Str, 'base64');
-        if (buffer.length > 4 * 1024 * 1024) { // 5MB limit for base64 image
-            return res.status(400).send('Base64 image size exceeds the limit of 5MB');
-        }
-        imageBuffer = buffer;
+      const base64Str = croppedImage.split(',')[1] || '';
+      const buffer = Buffer.from(base64Str, 'base64');
+      if (buffer.length > 4 * 1024 * 1024) {
+        return res
+          .status(400)
+          .send('Base64 image size exceeds the limit of 4 MiB');
+      }
+      imageBuffer = buffer;
     }
 
-    // Check for required fields
     if (!projectnameInput || !proovikiviInput || !supervisorInput) {
-        return res.status(400).send('All required fields must be filled out');
+      return res
+        .status(400)
+        .send('All required fields must be filled out');
     }
 
     try {
-        let institutionId = null;
-
-        // fetch institution ID if provided
-        if (institutionsInput) {
-            const [results] = await pool.promise().query('SELECT id FROM institution WHERE name = ?', [institutionsInput]);
-            if (results.length === 0) {
-                throw new Error('Institution not found');
-            }
-            institutionId = results[0].id;
+      let institutionId = null;
+      if (institutionsInput) {
+        const [rows] = await pool.execute(
+          'SELECT id FROM institution WHERE name = ?',
+          [institutionsInput]
+        );
+        if (rows.length === 0) {
+          throw new Error('Institution not found');
         }
+        institutionId = rows[0].id;
+      }
 
-        // handle empty start_date and end_date
-        const startDate = start_date ? start_date : null;
-        const endDate = end_date ? end_date : null;
+      const startDate = start_date || null;
+      const endDate = end_date || null;
 
-        const sql = `INSERT INTO project (user_id, title, proovikivi_id, supervisor, image, image_description, start_date, end_date, location_id, location_specify, team_member, institution_id, tag, problem_description, solution_idea, project_plan, results_conclusions, contact, web_link, youtube_link, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`;
+      const sql = `
+        INSERT INTO project (
+          user_id, title, proovikivi_id, supervisor,
+          image, image_description,
+          start_date, end_date,
+          location_id, location_specify, team_member,
+          institution_id, tag, problem_description,
+          solution_idea, project_plan,
+          results_conclusions, contact,
+          web_link, youtube_link,
+          published
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+      `;
+      const params = [
+        userId,
+        projectnameInput,
+        proovikiviInput,
+        supervisorInput,
+        imageBuffer,
+        image_description,
+        startDate,
+        endDate,
+        location_id,
+        location_specify,
+        team_member,
+        institutionId,
+        tag,
+        problem_description,
+        solution_idea,
+        project_plan,
+        results_conclusion,
+        contact,
+        web_link,
+        youtube_link,
+      ];
 
-        const [projectResult] = await pool.promise().query(sql, [
-            userId, projectnameInput, proovikiviInput, supervisorInput, imageBuffer, image_description,
-            startDate, endDate, location_id, location_specify, team_member, institutionId,
-            tag, problem_description, solution_idea, project_plan, results_conclusion, contact, web_link, youtube_link
-        ]);
+      const [projectResult] = await pool.execute(sql, params);
+      const projectId = projectResult.insertId;
 
-        const projectId = projectResult.insertId;
-
-        // insert global goals
-        if (global_goal_ids && global_goal_ids.length > 0) {
-            const globalGoalsSql = 'INSERT INTO project_global_goal (project_id, global_goal_id) VALUES ?';
-            const globalGoalsValues = global_goal_ids.map(goalId => [projectId, goalId]);
-
-            await pool.promise().query(globalGoalsSql, [globalGoalsValues]);
+      if (global_goal_ids) {
+        const goalArray = Array.isArray(global_goal_ids)
+          ? global_goal_ids
+          : [global_goal_ids];
+        if (goalArray.length > 0) {
+          const placeholders = goalArray.map(() => '(?, ?)').join(', ');
+          const flatParams = goalArray.flatMap((gId) => [
+            projectId,
+            gId,
+          ]);
+          const insertGGSql = `
+            INSERT INTO project_global_goal (project_id, global_goal_id)
+            VALUES ${placeholders}
+          `;
+          await pool.execute(insertGGSql, flatParams);
         }
+      }
 
-        // insert school subjects
-        if (school_subject_ids && school_subject_ids.length > 0) {
-            const schoolSubjectsSql = 'INSERT INTO project_school_subject (project_id, school_subject_id) VALUES ?';
-            const schoolSubjectsValues = school_subject_ids.map(subjectId => [projectId, subjectId]);
-
-            await pool.promise().query(schoolSubjectsSql, [schoolSubjectsValues]);
+      if (school_subject_ids) {
+        const subjArray = Array.isArray(school_subject_ids)
+          ? school_subject_ids
+          : [school_subject_ids];
+        if (subjArray.length > 0) {
+          const placeholders = subjArray.map(() => '(?, ?)').join(', ');
+          const flatParams = subjArray.flatMap((sId) => [
+            projectId,
+            sId,
+          ]);
+          const insertSSSql = `
+            INSERT INTO project_school_subject (
+              project_id, school_subject_id
+            ) VALUES ${placeholders}
+          `;
+          await pool.execute(insertSSSql, flatParams);
         }
+      }
 
-        res.render('projectCreated');
-
+      res.render('projectCreated');
     } catch (err) {
-        console.error('Error inserting project:', err);
-        res.status(500).send('Internal Server Error');
+      console.error('Error inserting project:', err);
+      res.status(500).send('Internal Server Error');
     }
-});
+  }
+);
 
 module.exports = router;

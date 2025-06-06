@@ -1,158 +1,122 @@
 <!DOCTYPE html>
 <html lang="et">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="/css/admin-panel.css" />
-  <link rel="stylesheet" href="/css/navbar.css" />
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"
-  />
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"
-  />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-  />
-  <title>Project Fullview</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/admin-panel.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css">
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css">
+
+    <script src="/script/admin-panel-tippy.js" defer></script>
+
+    <title>Admin: Lookup Tabelite Täiendamine</title>
 </head>
 <body>
-  <nav class="navbar">
-    <img src="/img/proovikivi_logo.png" alt="proovikivi logo" />
-    <button class="hamburger" id="hamburger">
-      <i class="fas fa-bars"></i>
-    </button>
-    <div class="menu" id="menu">
-      <ul>
-        <li><a href="/project-form">Loo projekt</a></li>
-        <li><a href="/projects">Projektid</a></li>
-        <li><a href="https://proovikivi.ee/portfoolio/">Proovikivid</a></li>
-        <li><a href="/profile">Minu profiil</a></li>
-        <li><a href="/logout">Logi välja</a></li>
-      </ul>
+    <nav class="navbar">
+        <img src="/img/proovikivi_logo.png" alt="proovikivi logo">
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu" id="menu">
+            <ul>
+                <li><a href="/project-form">Loo projekt</a></li>
+                <li><a href="/projects">Projektid</a></li>
+                <li><a href="https://proovikivi.ee/portfoolio/">Proovikivid</a></li>
+                <li><a href="/profile">Minu profiil</a></li>
+                <li><a href="/logout">Logi välja</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="content-container">
+            <h1>Admin: Populate Lookup Tables</h1>
+            <h3>Siin saad korraga täiendada kõiki abitableleid</h3>
+            <p class="required">
+                Järgnevad väljad täiendavad kasutajatele võimalike valiku võimalusi salvesta nuppu vajutades. Eemaldatud väljad jäevad nähtavaks loodud projektides, aga mitte valitavaks, ega nähtavateks uute projektide loomisel. Iga tekstiala jagatakse reavahe kohalt eri valikuteks (Enter). Tühje ridu ignoreeritakse.
+            </p>
+
+            <form action="/admin/panel" method="POST">
+
+                <div class="dataContainer">
+                    <label for="genders">
+                        Soolised identiteedid
+                        <i class="fa-regular fa-circle-question" id="tooltip-genders"></i>
+                    </label>
+                    <textarea id="genders" name="genders" placeholder="Sisesta üks identiteet reavahedega"><%= genders.map(row => row.name).join('\n') %></textarea>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="userTypes">
+                        Kasutajaliigid
+                        <i class="fa-regular fa-circle-question" id="tooltip-userTypes"></i>
+                    </label>
+                    <textarea id="userTypes" name="userTypes" placeholder="Sisesta üks kasutajaliik reavahedega"><%= userTypes.map(row => row.name).join('\n') %></textarea>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="schoolSubjects">
+                        Õppeained
+                        <i class="fa-regular fa-circle-question" id="tooltip-schoolSubjects"></i>
+                    </label>
+                    <textarea id="schoolSubjects" name="schoolSubjects" placeholder="Sisesta üks aine reavahedega"><%= schoolSubjects.map(row => row.name).join('\n') %></textarea>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="globalGoals">
+                        Kestliku arengu eesmärgid
+                        <i class="fa-regular fa-circle-question" id="tooltip-globalGoals"></i>
+                    </label>
+                    <textarea id="globalGoals" name="globalGoals" placeholder="Sisesta iga eesmärk eraldi real"><%= globalGoals.map(row => row.title).join('\n') %></textarea>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="proovikivid">
+                        Proovikivid (Projektide ideed)
+                        <i class="fa-regular fa-circle-question" id="tooltip-proovikivid"></i>
+                    </label>
+                    <textarea id="proovikivid" name="proovikivid" placeholder="Sisesta iga projekti pealkiri eraldi real"><%= proovikivid.map(row => row.title).join('\n') %></textarea>
+                </div>
+
+                <div class="dataContainer">
+                    <label for="locations">
+                        Üldised piirkonnad
+                        <i class="fa-regular fa-circle-question" id="tooltip-locations"></i>
+                    </label>
+                    <textarea id="locations" name="locations" placeholder="Sisesta iga linna/maakonna nimi eraldi real"><%= locations.map(row => row.name).join('\n') %></textarea>
+                </div>
+
+                 <div class="dataContainer">
+                    <label for="institutions">
+                        Asutused
+                        <i class="fa-regular fa-circle-question" id="tooltip-institutions"></i>
+                    </label>
+                    <textarea id="institutions" name="institutions" placeholder="Sisesta iga asutuse nimi eraldi real"><%= institutions.map(row => row.name).join('\n') %></textarea>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit" class="submitButton">Salvesta kõigi tabelite väärtused</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </nav>
 
-  <div>
-    <h1>Admin: Populate Lookup Tables</h1>
-    <p>
-      Paste or type one entry per line into each of the fields below. When you
-      click “Submit,” the server will:
-      <ol>
-        <li>Split each box by newline.</li>
-        <li>Trim out any empty lines.</li>
-        <li>Issue the corresponding INSERT statements for each table.</li>
-      </ol>
-      If any rows already exist (e.g. you ran this before), the backend should
-      be prepared to either skip duplicates or update as needed.
-    </p>
-
-    <form action="/admin/panel" method="POST">
-      <fieldset>
-        <legend>1) Genders</legend>
-        <label for="genders">Enter one gender per line:</label>
-        <textarea id="genders" name="genders">
-            <%= genders.map(row => row.name).join('\n') %>
-        </textarea
-        >
-        <div class="help">
-          – The “gender” table has columns (id, name).<br />
-          – The server will insert each non‐blank line as a new “name”
-          row. <br />
-          – If you want to change or add more options, simply edit or append
-          lines here.
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>2) User Types</legend>
-        <label for="userTypes">Enter one user‐type per line:</label>
-        <textarea id="userTypes" name="userTypes">
-            <%= userTypes.map(row => row.name).join('\n') %>
-        </textarea>
-        <div class="help">
-          – The “user_type” table is AUTO_INCREMENT on “id,” so we only need to
-          supply “name.”<br />
-          – Add or remove lines to control which user types exist.
-        </div>
-      </fieldset>
-
-      <!-- 
-        FIELDSET 3: School Subjects
-        Each line becomes INSERT INTO school_subject (name) VALUES ('line');
-      -->
-      <fieldset>
-        <legend>3) School Subjects</legend>
-        <label for="schoolSubjects">Enter one subject per line:</label>
-        <textarea id="schoolSubjects" name="schoolSubjects">
-            <%= schoolSubjects.map(row => row.name).join('\n') %>
-        </textarea>
-        <div class="help">
-          – Each non‐empty line becomes one row in `school_subject(name)`. <br />
-          – Leave blank lines out (they will be skipped).
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>4) Global Goals (Proovikivi “Üleilmne eesmärk”)</legend>
-        <label for="globalGoals"
-          >Enter one global goal title per line (images will be empty):</label
-        >
-        <textarea id="globalGoals" name="globalGoals">
-            <%= globalGoals.map(row => row.title).join('\n') %>
-        </textarea
-        >
-        <div class="help">
-          – Because `global_goal.image` is a BLOB and NOT NULL, the backend will
-          insert an empty blob (`''`) by default. <br />
-          – Each line here becomes a new `title` in the `global_goal` table.
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>5) Proovikivid (Project Ideas)</legend>
-        <label for="proovikivid"
-          >Enter one project (proovikivi) title per line. (Image = empty,
-          goal = NULL.)</label
-        >
-        <textarea id="proovikivid" name="proovikivid">
-            <%= proovikivid.map(row => row.title).join('\n') %>
-        </textarea>
-
-        <div class="help">
-          – The `proovikivi` table has columns `(id, title, image, goal)`.  
-          – We insert `title` from each line; `image` becomes an empty BLOB
-          (`''`) and `goal` is set to `NULL`.  
-          – Add or remove lines here to control the “project ideas” in the
-          database.
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>6) Locations (Asukohad)</legend>
-        <label for="locations">Enter one location per line:</label>
-        <textarea id="locations" name="locations">
-            <%= locations.map(row => row.name).join('\n') %>
-        </textarea>
-        <div class="help">
-          – Each non‐empty line becomes one row in `location(name)`.  
-          – Adjust as needed to add or remove counties/cities.
-        </div>
-      </fieldset>
-
-      <button type="submit">Submit All Lookup Values</button>
-    </form>
-  </div>
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
